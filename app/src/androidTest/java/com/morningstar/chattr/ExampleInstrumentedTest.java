@@ -1,13 +1,22 @@
+/*
+ * Created by Sujoy Datta. Copyright (c) 2018. All rights reserved.
+ *
+ * To the person who is reading this..
+ * When you finally understand how this works, please do explain it to me too at sujoydatta26@gmail.com
+ * P.S.: In case you are planning to use this without mentioning me, you will be met with mean judgemental looks and sarcastic comments.
+ */
+
 package com.morningstar.chattr;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Instrumented test, which will execute on an Android device.
