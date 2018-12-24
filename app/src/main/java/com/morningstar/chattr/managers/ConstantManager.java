@@ -11,4 +11,6 @@ package com.morningstar.chattr.managers;
 public class ConstantManager {
 
     public static final String SHARED_PREF_FILE_NAME = "ChattrPref";
+    public static final String PREF_TITLE_USER_MOBILE = "user_mobile";
+    public static final String PREF_TITLE_USER_ID = "UID";
 }
