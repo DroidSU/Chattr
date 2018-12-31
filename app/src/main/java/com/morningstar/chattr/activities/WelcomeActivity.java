@@ -30,7 +30,13 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         firebaseAuth = FirebaseAuth.getInstance();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //start user sign in process
         final Handler handler = new Handler();
         final Runnable runnable = new Runnable() {
             @Override
@@ -42,7 +48,7 @@ public class WelcomeActivity extends AppCompatActivity {
                         startActivity(intent);
                         finish();
                     } else {
-                        Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
+                        Intent intent = new Intent(WelcomeActivity.this, PhoneLoginActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -53,6 +59,6 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
             }
         };
-        handler.postDelayed(runnable, 1000);
+        handler.postDelayed(runnable, 100);
     }
 }

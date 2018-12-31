@@ -37,20 +37,16 @@ import java.util.concurrent.TimeUnit;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class LoginActivity extends AppCompatActivity {
+public class PhoneLoginActivity extends AppCompatActivity {
 
-    private final String TAG = "LoginActivity";
+    private final String TAG = "PhoneLoginActivity";
 
     private EditText editTextPhoneNumber;
     private Button buttonVerify;
     private TextView textView;
-
-    private EditText editTextEmail;
-    private EditText editTextPassword;
-    private Button emailConfirmButton;
+    private TextView loginUisngEmail;
 
     private LinearLayout rootLayout;
-    private LinearLayout phoneVerificationLayout, emailVerificationLayout;
 
     private String phoneNumber;
     private String smsCode;
@@ -66,10 +62,8 @@ public class LoginActivity extends AppCompatActivity {
             if (smsCode != null) {
                 verifySmsCode(smsCode);
             } else {
-                Snackbar snackbar = Snackbar.make(rootLayout, "Error while verifying phone. Please try signing up with email Id.", Snackbar.LENGTH_SHORT);
+                Snackbar snackbar = Snackbar.make(rootLayout, "Error while verifying phone. Please try signing up with email Id.", Snackbar.LENGTH_LONG);
                 snackbar.show();
-                emailVerificationLayout.setVisibility(View.VISIBLE);
-                phoneVerificationLayout.setVisibility(View.GONE);
             }
         }
 
@@ -89,17 +83,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_phone_login);
 
         editTextPhoneNumber = findViewById(R.id.loginPhoneNumber);
         buttonVerify = findViewById(R.id.loginVerifyButton);
         textView = findViewById(R.id.textView1);
         rootLayout = findViewById(R.id.loginRootLayout);
-        phoneVerificationLayout = findViewById(R.id.phoneVerificationLayout);
-        emailVerificationLayout = findViewById(R.id.emailVerificationLayout);
-        editTextEmail = findViewById(R.id.loginEmail);
-        editTextPassword = findViewById(R.id.loginPassword);
-        emailConfirmButton = findViewById(R.id.emailLoginConfirm);
+        loginUisngEmail = findViewById(R.id.loginUsingEmail);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -117,6 +107,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        loginUisngEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PhoneLoginActivity.this, LoginUsingEmailActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     private void verifySmsCode(String smsCode) {
@@ -125,6 +124,9 @@ public class LoginActivity extends AppCompatActivity {
         //signing in the user
         signInWithPhoneCreds(phoneAuthCredential);
         Log.i(TAG, "Sms OTP sent: " + smsCode);
+        Snackbar snackbar = Snackbar.make(rootLayout, "Sms OTP sending failed. Try logging in using email and password", Snackbar.LENGTH_SHORT);
+        snackbar.show();
+        textView.setText(getResources().getString(R.string.enter_phone_number_to_verify));
     }
 
     private void signInWithPhoneCreds(PhoneAuthCredential phoneAuthCredential) {
@@ -136,11 +138,12 @@ public class LoginActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString(ConstantManager.PREF_TITLE_USER_MOBILE, phoneNumber);
                         editor.putString(ConstantManager.PREF_TITLE_USER_ID, firebaseAuth.getUid());
+                        editor.apply();
                         ProfileManager.userMobile = phoneNumber;
                         ProfileManager.userId = firebaseAuth.getUid();
 
                         Log.i(TAG, "Signing in with phone creds");
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent intent = new Intent(PhoneLoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -158,5 +161,4 @@ public class LoginActivity extends AppCompatActivity {
         PhoneAuthProvider.getInstance().verifyPhoneNumber("+91" + phoneNumber, 60, TimeUnit.SECONDS, TaskExecutors.MAIN_THREAD, verificationStateChangedCallbacks);
         Log.i(TAG, "Verification code sent");
     }
-
 }

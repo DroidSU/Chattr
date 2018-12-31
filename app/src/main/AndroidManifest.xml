@@ -4,7 +4,7 @@
   ~ To the person who is reading this..
   ~ When you finally understand how this works, please do explain it to me too at sujoydatta26@gmail.com
   ~ P.S.: In case you are planning to use this without mentioning me, you will be met with mean judgemental looks and sarcastic comments.
-  -->
+-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.morningstar.chattr">
@@ -27,9 +27,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.LoginActivity" />
-        <activity android:name=".activities.RegisterActivity" />
+        <activity android:name=".activities.PhoneLoginActivity" />
+        <activity android:name=".activities.LoginUsingEmailActivity" />
         <activity android:name=".activities.NoNetworkActivity" />
+        <activity android:name=".activities.RegisterUsingEmail"></activity>
     </application>
 
 </manifest>
