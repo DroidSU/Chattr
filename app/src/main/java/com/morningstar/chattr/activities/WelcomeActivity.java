@@ -44,7 +44,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 if (NetworkManager.isUserOnline(WelcomeActivity.this)) {
                     firebaseUser = firebaseAuth.getCurrentUser();
                     if (firebaseUser != null) {
-                        Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+                        Intent intent = new Intent(WelcomeActivity.this, AccountDetailsActivity.class);
                         startActivity(intent);
                         finish();
                     } else {

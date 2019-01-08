@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -28,7 +29,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.ProfileManager;
-import com.rey.material.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,7 +40,7 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
     private EditText editTextEmail;
     private EditText editTextPassword;
     private TextView textViewNewAccount;
-    private Button buttonVerfiy;
+    private ActionProcessButton buttonVerfiy;
     private LinearLayout linearLayout;
 
     private FirebaseAuth firebaseAuth;
@@ -61,13 +61,16 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
         buttonVerfiy = findViewById(R.id.loginUsingEmailVerifyButton);
         textViewNewAccount = findViewById(R.id.signUp);
         linearLayout = findViewById(R.id.loginUsingEmailRootLayout);
+        buttonVerfiy.setProgress(0);
+        buttonVerfiy.setMode(ActionProcessButton.Mode.ENDLESS);
 
         buttonVerfiy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 emailAddress = editTextEmail.getText().toString();
                 password = editTextPassword.getText().toString();
-
+                buttonVerfiy.setProgress(99);
+                buttonVerfiy.setMode(ActionProcessButton.Mode.ENDLESS);
                 if (!TextUtils.isEmpty(emailAddress) && !TextUtils.isEmpty(password)) {
                     signUpExistingUser();
                 } else {
@@ -75,6 +78,7 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
                         editTextEmail.setError("Required");
                     if (TextUtils.isEmpty(password))
                         editTextPassword.setError("Required");
+                    buttonVerfiy.setProgress(0);
                 }
             }
         });
@@ -95,6 +99,7 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            buttonVerfiy.setProgress(100);
                             sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, emailAddress);
@@ -102,7 +107,6 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
                             editor.apply();
                             ProfileManager.userEmail = emailAddress;
                             ProfileManager.userId = firebaseAuth.getUid();
-
                             Intent intent = new Intent(LoginUsingEmailActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -115,6 +119,7 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
                         Log.i(TAG, "Signing In failed" + e.getMessage());
                         Snackbar snackbar = Snackbar.make(linearLayout, "Account does not exist", Snackbar.LENGTH_SHORT);
                         snackbar.show();
+                        buttonVerfiy.setProgress(-1);
                     }
                 });
     }

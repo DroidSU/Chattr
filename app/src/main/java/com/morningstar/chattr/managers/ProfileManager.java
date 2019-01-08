@@ -13,4 +13,7 @@ public class ProfileManager {
     public static String userEmail;
     public static String userMobile;
     public static String userId;
+    public static String userName;
+    public static String userSurname;
+    public static String userUsername;
 }

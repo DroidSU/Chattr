@@ -30,7 +30,8 @@
         <activity android:name=".activities.PhoneLoginActivity" />
         <activity android:name=".activities.LoginUsingEmailActivity" />
         <activity android:name=".activities.NoNetworkActivity" />
-        <activity android:name=".activities.RegisterUsingEmail"></activity>
+        <activity android:name=".activities.RegisterUsingEmail" />
+        <activity android:name=".activities.AccountDetailsActivity"></activity>
     </application>
 
 </manifest>

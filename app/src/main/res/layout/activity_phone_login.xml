@@ -14,49 +14,60 @@
     android:orientation="vertical"
     tools:context=".activities.PhoneLoginActivity">
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="100dp"
-        android:text="@string/enter_phone_number_to_verify"
-        android:textColor="@android:color/black"
-        android:textSize="18sp" />
-
-    <EditText
-        android:id="@+id/loginPhoneNumber"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="50dp"
-        android:hint="phone number"
-        android:inputType="phone" />
+        android:layout_height="match_parent">
 
-    <com.rey.material.widget.Button
-        android:id="@+id/loginVerifyButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:text="@string/verify"
-        android:textColor="@android:color/black" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="100dp"
+                android:text="@string/enter_phone_number_to_verify"
+                android:textColor="@android:color/black"
+                android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/loginUsingEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Login Using Email"
-            android:textColor="@android:color/holo_blue_dark"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            <EditText
+                android:id="@+id/loginPhoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="50dp"
+                android:hint="phone number"
+                android:inputType="phone" />
+
+            <com.dd.processbutton.iml.ActionProcessButton
+                android:id="@+id/loginVerifyButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="50dp"
+                android:text="@string/verify"
+                android:textColor="@android:color/black" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="150dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/loginUsingEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Login Using Email"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

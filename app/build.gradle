@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     testImplementation 'junit:junit:4.12'
@@ -37,6 +37,15 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0-alpha02'
     implementation 'androidx.core:core:1.0.1'
     implementation 'com.github.rey5137:material:1.2.5'
+    //firebase
     implementation 'com.google.firebase:firebase-auth:16.1.0'
+    implementation 'com.google.firebase:firebase-database:16.0.5'
+    //lottie animation
     implementation 'com.airbnb.android:lottie:2.5.0'
+    //actionProcessButton
+    implementation 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
+    //circleImageView
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
+    //glide
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
 }

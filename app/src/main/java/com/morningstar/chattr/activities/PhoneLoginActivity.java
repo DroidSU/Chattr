@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.TaskExecutors;
@@ -30,7 +31,6 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.ProfileManager;
-import com.rey.material.widget.Button;
 
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +42,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
     private final String TAG = "PhoneLoginActivity";
 
     private EditText editTextPhoneNumber;
-    private Button buttonVerify;
+    private ActionProcessButton buttonVerify;
     private TextView textView;
     private TextView loginUisngEmail;
 
@@ -62,6 +62,8 @@ public class PhoneLoginActivity extends AppCompatActivity {
             if (smsCode != null) {
                 verifySmsCode(smsCode);
             } else {
+                buttonVerify.setProgress(-1);
+                textView.setText(getResources().getString(R.string.enter_phone_number_to_verify));
                 Snackbar snackbar = Snackbar.make(rootLayout, "Error while verifying phone. Please try signing up with email Id.", Snackbar.LENGTH_LONG);
                 snackbar.show();
             }
@@ -92,12 +94,15 @@ public class PhoneLoginActivity extends AppCompatActivity {
         loginUisngEmail = findViewById(R.id.loginUsingEmail);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        buttonVerify.setProgress(0);
+        buttonVerify.setMode(ActionProcessButton.Mode.ENDLESS);
 
         buttonVerify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 phoneNumber = editTextPhoneNumber.getText().toString();
                 if (!TextUtils.isEmpty(phoneNumber) && phoneNumber.length() <= 10) {
+                    buttonVerify.setProgress(1);
                     textView.setText("Please wait..");
                     buttonVerify.setEnabled(false);
                     Log.i(TAG, "Phone verification started");
@@ -124,9 +129,6 @@ public class PhoneLoginActivity extends AppCompatActivity {
         //signing in the user
         signInWithPhoneCreds(phoneAuthCredential);
         Log.i(TAG, "Sms OTP sent: " + smsCode);
-        Snackbar snackbar = Snackbar.make(rootLayout, "Sms OTP sending failed. Try logging in using email and password", Snackbar.LENGTH_SHORT);
-        snackbar.show();
-        textView.setText(getResources().getString(R.string.enter_phone_number_to_verify));
     }
 
     private void signInWithPhoneCreds(PhoneAuthCredential phoneAuthCredential) {
@@ -141,7 +143,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
                         editor.apply();
                         ProfileManager.userMobile = phoneNumber;
                         ProfileManager.userId = firebaseAuth.getUid();
-
+                        buttonVerify.setProgress(100);
                         Log.i(TAG, "Signing in with phone creds");
                         Intent intent = new Intent(PhoneLoginActivity.this, MainActivity.class);
                         startActivity(intent);

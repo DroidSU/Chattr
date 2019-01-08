@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -27,7 +28,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.ProfileManager;
-import com.rey.material.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,7 +36,7 @@ public class RegisterUsingEmail extends AppCompatActivity {
 
     private EditText editTextEmail;
     private EditText editTextPassword;
-    private Button buttonSignUp;
+    private ActionProcessButton buttonSignUp;
     private LinearLayout linearLayout;
 
     private FirebaseAuth firebaseAuth;
@@ -57,12 +57,16 @@ public class RegisterUsingEmail extends AppCompatActivity {
         buttonSignUp = findViewById(R.id.registerConfirm);
         linearLayout = findViewById(R.id.registerUsingEmailRootLayout);
 
+        buttonSignUp.setMode(ActionProcessButton.Mode.ENDLESS);
+        buttonSignUp.setProgress(0);
+
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 emailAddress = editTextEmail.getText().toString();
                 password = editTextPassword.getText().toString();
-
+                buttonSignUp.setProgress(99);
+                buttonSignUp.setMode(ActionProcessButton.Mode.ENDLESS);
                 if (!TextUtils.isEmpty(emailAddress) && !TextUtils.isEmpty(password)) {
                     signUpNewUser();
                 } else {
@@ -70,6 +74,7 @@ public class RegisterUsingEmail extends AppCompatActivity {
                         editTextEmail.setError("Required");
                     if (TextUtils.isEmpty(password))
                         editTextPassword.setError("Required");
+                    buttonSignUp.setProgress(0);
                 }
             }
         });
@@ -81,6 +86,7 @@ public class RegisterUsingEmail extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            buttonSignUp.setProgress(100);
                             sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, emailAddress);
@@ -88,8 +94,7 @@ public class RegisterUsingEmail extends AppCompatActivity {
                             editor.apply();
                             ProfileManager.userEmail = emailAddress;
                             ProfileManager.userId = firebaseAuth.getUid();
-
-                            Intent intent = new Intent(RegisterUsingEmail.this, MainActivity.class);
+                            Intent intent = new Intent(RegisterUsingEmail.this, AccountDetailsActivity.class);
                             startActivity(intent);
                             finish();
                         }
@@ -100,6 +105,7 @@ public class RegisterUsingEmail extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
                         Snackbar snackbar = Snackbar.make(linearLayout, "Account could not be registered", Snackbar.LENGTH_SHORT);
                         snackbar.show();
+                        buttonSignUp.setProgress(-1);
                     }
                 });
     }
@@ -110,6 +116,8 @@ public class RegisterUsingEmail extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser != null) {
             Toast.makeText(RegisterUsingEmail.this, "Account already registered", Toast.LENGTH_SHORT).show();
+            ProfileManager.userEmail = firebaseUser.getEmail();
+            ProfileManager.userUsername = firebaseUser.getDisplayName();
             Intent intent = new Intent(RegisterUsingEmail.this, MainActivity.class);
             startActivity(intent);
             finish();
