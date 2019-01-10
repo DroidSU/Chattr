@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (firebaseUser == null) {
-            Intent intent = new Intent(MainActivity.this, PhoneLoginActivity.class);
+            Intent intent = new Intent(MainActivity.this, RegisterUsingEmail.class);
             startActivity(intent);
             finish();
         }
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_logout:
                 firebaseAuth.signOut();
-                Intent intent = new Intent(MainActivity.this, PhoneLoginActivity.class);
+                Intent intent = new Intent(MainActivity.this, RegisterUsingEmail.class);
                 startActivity(intent);
                 finish();
                 break;

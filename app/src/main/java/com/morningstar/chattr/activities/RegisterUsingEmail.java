@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dd.processbutton.iml.ActionProcessButton;
@@ -38,6 +39,7 @@ public class RegisterUsingEmail extends AppCompatActivity {
     private EditText editTextPassword;
     private ActionProcessButton buttonSignUp;
     private LinearLayout linearLayout;
+    private TextView textViewSignIn;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -56,6 +58,7 @@ public class RegisterUsingEmail extends AppCompatActivity {
         editTextPassword = findViewById(R.id.registerPassword);
         buttonSignUp = findViewById(R.id.registerConfirm);
         linearLayout = findViewById(R.id.registerUsingEmailRootLayout);
+        textViewSignIn = findViewById(R.id.signIn);
 
         buttonSignUp.setMode(ActionProcessButton.Mode.ENDLESS);
         buttonSignUp.setProgress(0);
@@ -76,6 +79,15 @@ public class RegisterUsingEmail extends AppCompatActivity {
                         editTextPassword.setError("Required");
                     buttonSignUp.setProgress(0);
                 }
+            }
+        });
+
+        textViewSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RegisterUsingEmail.this, LoginUsingEmailActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }

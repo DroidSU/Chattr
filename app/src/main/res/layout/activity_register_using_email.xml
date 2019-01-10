@@ -60,4 +60,15 @@
         android:layout_marginTop="20dp"
         android:text="Sign Up"
         android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/signIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="100dp"
+        android:text="Already Registered?"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textSize="18sp"
+        android:textStyle="italic|bold" />
 </LinearLayout>

@@ -16,6 +16,19 @@ public class UserModel {
     private String userEmail;
     private String userMobile;
     private String userDPUrl;
+    private String userId;
+
+    public UserModel() {
+        //Empty constructor
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public UserModel(String userUserName, String userName, String userSurname, String userEmail, String userMobile, String userDPUrl) {
         this.userUserName = userUserName;
@@ -23,6 +36,54 @@ public class UserModel {
         this.userSurname = userSurname;
         this.userEmail = userEmail;
         this.userMobile = userMobile;
+        this.userDPUrl = userDPUrl;
+    }
+
+    public String getUserUserName() {
+        return userUserName;
+    }
+
+    public void setUserUserName(String userUserName) {
+        this.userUserName = userUserName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserSurname() {
+        return userSurname;
+    }
+
+    public void setUserSurname(String userSurname) {
+        this.userSurname = userSurname;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
+    public String getUserMobile() {
+        return userMobile;
+    }
+
+    public void setUserMobile(String userMobile) {
+        this.userMobile = userMobile;
+    }
+
+    public String getUserDPUrl() {
+        return userDPUrl;
+    }
+
+    public void setUserDPUrl(String userDPUrl) {
         this.userDPUrl = userDPUrl;
     }
 }
