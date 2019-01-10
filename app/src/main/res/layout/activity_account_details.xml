@@ -24,21 +24,28 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="120dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="20dp">
+                android:layout_marginTop="10dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/accountDisplayPicture"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
                     android:layout_centerInParent="true"
                     android:src="@mipmap/ic_default_user" />
+
+                <ProgressBar
+                    android:id="@+id/imageUploadingProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="gone" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/accountUploadImage"
@@ -46,7 +53,8 @@
                     android:layout_height="32dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginEnd="145dp"
+                    android:layout_marginEnd="133dp"
+                    android:layout_marginBottom="0dp"
                     android:src="@mipmap/ic_camera" />
             </RelativeLayout>
         </LinearLayout>
@@ -82,7 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="30dp"
             android:orientation="horizontal"
             android:weightSum="2">
@@ -123,7 +131,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="30dp"
             android:hint="Username"
             android:inputType="text"
@@ -144,7 +152,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="30dp"
             android:hint="Mobile Number"
             android:inputType="phone"
@@ -152,6 +160,7 @@
             android:textSize="18sp" />
 
         <Button
+            android:id="@+id/updateProfileConfirm"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="40dp"

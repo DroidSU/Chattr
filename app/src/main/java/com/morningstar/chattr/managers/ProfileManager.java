@@ -16,4 +16,5 @@ public class ProfileManager {
     public static String userName;
     public static String userSurname;
     public static String userUsername;
+    public static String userDPUrl;
 }

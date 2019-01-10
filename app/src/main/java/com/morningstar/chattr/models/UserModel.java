@@ -15,12 +15,14 @@ public class UserModel {
     private String userSurname;
     private String userEmail;
     private String userMobile;
+    private String userDPUrl;
 
-    public UserModel(String userUserName, String userName, String userSurname, String userEmail, String userMobile) {
+    public UserModel(String userUserName, String userName, String userSurname, String userEmail, String userMobile, String userDPUrl) {
         this.userUserName = userUserName;
         this.userName = userName;
         this.userSurname = userSurname;
         this.userEmail = userEmail;
         this.userMobile = userMobile;
+        this.userDPUrl = userDPUrl;
     }
 }
