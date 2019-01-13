@@ -25,11 +25,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -42,6 +46,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AccountDetailsActivity extends AppCompatActivity {
@@ -53,6 +58,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     private EditText editTextName, editTextSurname, editTextMobileNumber;
     private Toolbar toolbar;
     private Button submitButton;
+    private NestedScrollView nestedScrollView;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -85,6 +91,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         editTextUserName = findViewById(R.id.accountUserName);
         submitButton = findViewById(R.id.updateProfileConfirm);
         editTextMobileNumber = findViewById(R.id.accountPhoneNumber);
+        nestedScrollView = findViewById(R.id.accountDetailsRootLayout);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -139,6 +146,32 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     private void saveUserInformation() {
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(username);
+        if (firebaseUser != null && uriProfileImage != null) {
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        editTextUserName.setError("Choose different Username");
+                        progressDialog.dismiss();
+                    } else {
+                        addNewUserDetails();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        } else {
+            Snackbar snackbar = Snackbar.make(nestedScrollView, "Please select an image to upload", Snackbar.LENGTH_SHORT);
+            snackbar.show();
+            progressDialog.dismiss();
+        }
+    }
+
+    private void addNewUserDetails() {
         databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
         if (firebaseUser != null && uriProfileImage != null) {
             databaseReference.child(username).child("Name").setValue(name)
