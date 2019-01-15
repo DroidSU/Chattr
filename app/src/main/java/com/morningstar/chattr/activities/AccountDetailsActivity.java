@@ -10,6 +10,7 @@ package com.morningstar.chattr.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.morningstar.chattr.R;
+import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.ProfileManager;
 
 import java.io.IOException;
@@ -66,6 +68,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
+    private SharedPreferences sharedPreferences;
 
     private String name = "";
     private String surname = "";
@@ -146,7 +149,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     private void saveUserInformation() {
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(username);
+        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_USERS_TABLE).child(username);
         if (firebaseUser != null && uriProfileImage != null) {
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -155,7 +158,57 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         editTextUserName.setError("Choose different Username");
                         progressDialog.dismiss();
                     } else {
-                        addNewUserDetails();
+                        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE).child(mobNumber);
+                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    editTextMobileNumber.setError("");
+                                    progressDialog.dismiss();
+                                    Snackbar snackbar = Snackbar.make(nestedScrollView, "Phone number already registered", Snackbar.LENGTH_SHORT);
+                                    snackbar.show();
+                                } else {
+                                    databaseReference.child(ConstantManager.FIREBASE_EMAIL_COLUMN).setValue(firebaseUser.getEmail())
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    databaseReference.child(ConstantManager.FIREBASE_USERNAME_COLUMN).setValue(username)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    databaseReference.child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN).setValue(true)
+                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                @Override
+                                                                                public void onSuccess(Void aVoid) {
+                                                                                    addNewUserDetails();
+                                                                                }
+                                                                            });
+                                                                }
+                                                            })
+                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+                                                                    Toast.makeText(AccountDetailsActivity.this, "An error occurred", Toast.LENGTH_SHORT).show();
+                                                                    progressDialog.dismiss();
+                                                                }
+                                                            });
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(AccountDetailsActivity.this, "An error occurred", Toast.LENGTH_SHORT).show();
+                                                    progressDialog.dismiss();
+                                                }
+                                            });
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
                     }
                 }
 
@@ -172,21 +225,21 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     private void addNewUserDetails() {
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
+        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_USERS_TABLE);
         if (firebaseUser != null && uriProfileImage != null) {
-            databaseReference.child(username).child("Name").setValue(name)
+            databaseReference.child(username).child(ConstantManager.FIREBASE_NAME_COLUMN).setValue(name)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            databaseReference.child(username).child("Surname").setValue(surname)
+                            databaseReference.child(username).child(ConstantManager.FIREBASE_SURNAME_COLUMN).setValue(surname)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            databaseReference.child(username).child("Username").setValue(username)
+                                            databaseReference.child(username).child(ConstantManager.FIREBASE_USERNAME_COLUMN).setValue(username)
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-                                                            databaseReference.child(username).child("Mobile Number").setValue(mobNumber)
+                                                            databaseReference.child(username).child(ConstantManager.FIREBASE_MOBILE_NUMBER_COLUMN).setValue(mobNumber)
                                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                         @Override
                                                                         public void onSuccess(Void aVoid) {
@@ -242,7 +295,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     profileImageUrl = uri.toString();
-                                    databaseReference.child(username).child("dp link").setValue(profileImageUrl)
+                                    databaseReference.child(username).child(ConstantManager.FIREBASE_DP_LINK_COLUMN).setValue(profileImageUrl)
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
@@ -260,6 +313,12 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                                             ProfileManager.userName = name;
                                                             ProfileManager.userSurname = surname;
                                                             ProfileManager.userMobile = mobNumber;
+
+                                                            sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
+                                                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                            editor.putString(ConstantManager.PREF_TITLE_USER_MOBILE, mobNumber);
+                                                            editor.putString(ConstantManager.PREF_TITLE_USER_USERNAME, username);
+                                                            editor.apply();
 
                                                             Intent intent = new Intent(AccountDetailsActivity.this, MainActivity.class);
                                                             startActivity(intent);
