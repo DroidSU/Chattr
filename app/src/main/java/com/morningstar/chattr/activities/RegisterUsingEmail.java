@@ -102,7 +102,6 @@ public class RegisterUsingEmail extends AppCompatActivity {
                             sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, emailAddress);
-                            editor.putString(ConstantManager.PREF_TITLE_USER_ID, firebaseAuth.getUid());
                             editor.apply();
                             ProfileManager.userEmail = emailAddress;
                             ProfileManager.userId = firebaseAuth.getUid();
@@ -128,8 +127,6 @@ public class RegisterUsingEmail extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser != null) {
             Toast.makeText(RegisterUsingEmail.this, "Account already registered", Toast.LENGTH_SHORT).show();
-            ProfileManager.userEmail = firebaseUser.getEmail();
-            ProfileManager.userUsername = firebaseUser.getDisplayName();
             Intent intent = new Intent(RegisterUsingEmail.this, MainActivity.class);
             startActivity(intent);
             finish();

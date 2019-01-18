@@ -40,7 +40,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
-import com.morningstar.chattr.managers.ProfileManager;
+import com.morningstar.chattr.models.UserModel;
+import com.morningstar.chattr.models.UserStatusModel;
 
 import java.io.IOException;
 
@@ -68,6 +69,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
+
+    private DatabaseReference userTableRereference;
+    private DatabaseReference statusTableReference;
     private SharedPreferences sharedPreferences;
 
     private String name = "";
@@ -111,9 +115,11 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 username = editTextUserName.getText().toString();
                 mobNumber = editTextMobileNumber.getText().toString();
 
-                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(surname) && !TextUtils.isEmpty(username) && !TextUtils.isEmpty(mobNumber) && mobNumber.length() <= 10) {
+                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(surname) && !TextUtils.isEmpty(username) && !TextUtils.isEmpty(mobNumber) && mobNumber.length() == 10) {
+                    userTableRereference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_USERS_TABLE).child(username);
+                    statusTableReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE).child(mobNumber);
                     progressDialog.show();
-                    saveUserInformation();
+                    validateUserInformation();
                 } else {
                     if (TextUtils.isEmpty(name)) {
                         editTextName.setError("Required Field");
@@ -148,18 +154,16 @@ public class AccountDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void saveUserInformation() {
-        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_USERS_TABLE).child(username);
+    private void validateUserInformation() {
         if (firebaseUser != null && uriProfileImage != null) {
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            userTableRereference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         editTextUserName.setError("Choose different Username");
                         progressDialog.dismiss();
                     } else {
-                        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE).child(mobNumber);
-                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        statusTableReference.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
@@ -168,39 +172,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                     Snackbar snackbar = Snackbar.make(nestedScrollView, "Phone number already registered", Snackbar.LENGTH_SHORT);
                                     snackbar.show();
                                 } else {
-                                    databaseReference.child(ConstantManager.FIREBASE_EMAIL_COLUMN).setValue(firebaseUser.getEmail())
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    databaseReference.child(ConstantManager.FIREBASE_USERNAME_COLUMN).setValue(username)
-                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                @Override
-                                                                public void onSuccess(Void aVoid) {
-                                                                    databaseReference.child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN).setValue(true)
-                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                @Override
-                                                                                public void onSuccess(Void aVoid) {
-                                                                                    addNewUserDetails();
-                                                                                }
-                                                                            });
-                                                                }
-                                                            })
-                                                            .addOnFailureListener(new OnFailureListener() {
-                                                                @Override
-                                                                public void onFailure(@NonNull Exception e) {
-                                                                    Toast.makeText(AccountDetailsActivity.this, "An error occurred", Toast.LENGTH_SHORT).show();
-                                                                    progressDialog.dismiss();
-                                                                }
-                                                            });
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(AccountDetailsActivity.this, "An error occurred", Toast.LENGTH_SHORT).show();
-                                                    progressDialog.dismiss();
-                                                }
-                                            });
+                                    uploadToImageToStorage();
                                 }
                             }
 
@@ -225,29 +197,35 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     private void addNewUserDetails() {
-        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_USERS_TABLE);
         if (firebaseUser != null && uriProfileImage != null) {
-            databaseReference.child(username).child(ConstantManager.FIREBASE_NAME_COLUMN).setValue(name)
+            final UserModel userModel = new UserModel(name, surname, firebaseUser.getEmail(), mobNumber, profileImageUrl);
+            userTableRereference.setValue(userModel)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            databaseReference.child(username).child(ConstantManager.FIREBASE_SURNAME_COLUMN).setValue(surname)
+                            UserStatusModel userStatusModel = new UserStatusModel(true, true);
+                            statusTableReference.setValue(userStatusModel)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            databaseReference.child(username).child(ConstantManager.FIREBASE_USERNAME_COLUMN).setValue(username)
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
+                                                    .setDisplayName(username)
+                                                    .setPhotoUri(Uri.parse(profileImageUrl))
+                                                    .build();
+
+                                            firebaseUser.updateProfile(userProfileChangeRequest)
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                         @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            databaseReference.child(username).child(ConstantManager.FIREBASE_MOBILE_NUMBER_COLUMN).setValue(mobNumber)
-                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                        @Override
-                                                                        public void onSuccess(Void aVoid) {
-                                                                            uploadToImageToStorage();
-                                                                        }
-                                                                    });
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            saveValuesToSharedPrefs();
                                                         }
                                                     });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
                                         }
                                     });
                         }
@@ -255,14 +233,28 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(AccountDetailsActivity.this, "Adding new Account failed", Toast.LENGTH_SHORT).show();
-                            progressDialog.dismiss();
+
                         }
                     });
         } else {
             Toast.makeText(this, "Please select an image to upload", Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
         }
+    }
+
+    private void saveValuesToSharedPrefs() {
+        sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ConstantManager.PREF_TITLE_USER_MOBILE, mobNumber);
+        editor.putString(ConstantManager.PREF_TITLE_USER_NAME, name);
+        editor.putString(ConstantManager.PREF_TITLE_USER_DP_URL, profileImageUrl);
+        editor.putString(ConstantManager.PREF_TITLE_USER_SURNAME, surname);
+        editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, firebaseUser.getEmail());
+        editor.apply();
+        progressDialog.dismiss();
+        Intent intent = new Intent(AccountDetailsActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -295,38 +287,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     profileImageUrl = uri.toString();
-                                    databaseReference.child(username).child(ConstantManager.FIREBASE_DP_LINK_COLUMN).setValue(profileImageUrl)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
-                                                            .setDisplayName(username)
-                                                            .setPhotoUri(Uri.parse(profileImageUrl))
-                                                            .build();
-
-                                                    firebaseUser.updateProfile(userProfileChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            progressDialog.dismiss();
-
-                                                            ProfileManager.userDPUrl = profileImageUrl;
-                                                            ProfileManager.userName = name;
-                                                            ProfileManager.userSurname = surname;
-                                                            ProfileManager.userMobile = mobNumber;
-
-                                                            sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
-                                                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                            editor.putString(ConstantManager.PREF_TITLE_USER_MOBILE, mobNumber);
-                                                            editor.putString(ConstantManager.PREF_TITLE_USER_USERNAME, username);
-                                                            editor.apply();
-
-                                                            Intent intent = new Intent(AccountDetailsActivity.this, MainActivity.class);
-                                                            startActivity(intent);
-                                                            finish();
-                                                        }
-                                                    });
-                                                }
-                                            });
+                                    addNewUserDetails();
                                 }
                             });
                         }

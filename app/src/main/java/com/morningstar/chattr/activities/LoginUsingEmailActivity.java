@@ -21,14 +21,21 @@ import android.widget.TextView;
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
-import com.morningstar.chattr.managers.ProfileManager;
+import com.morningstar.chattr.models.UserModel;
+import com.morningstar.chattr.models.UserStatusModel;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,9 +53,11 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private SharedPreferences sharedPreferences;
+    private DatabaseReference databaseReference;
 
     private String emailAddress;
     private String password;
+    private String mobileNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,15 +110,32 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             buttonVerfiy.setProgress(100);
                             sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, emailAddress);
-                            editor.putString(ConstantManager.PREF_TITLE_USER_ID, firebaseAuth.getUid());
-                            editor.apply();
-                            ProfileManager.userEmail = emailAddress;
-                            ProfileManager.userId = firebaseAuth.getUid();
-                            Intent intent = new Intent(LoginUsingEmailActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
+                            firebaseUser = firebaseAuth.getCurrentUser();
+                            String username = firebaseUser.getDisplayName();
+                            if (username != null) {
+                                databaseReference = FirebaseDatabase.getInstance().getReference(ConstantManager.FIREBASE_USERS_TABLE).child(username);
+                                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        UserModel userModel = dataSnapshot.getValue(UserModel.class);
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        editor.putString(ConstantManager.PREF_TITLE_USER_NAME, userModel.getUserName());
+                                        editor.putString(ConstantManager.PREF_TITLE_USER_SURNAME, userModel.getUserSurname());
+                                        editor.putString(ConstantManager.PREF_TITLE_USER_MOBILE, userModel.getUserMobile());
+                                        editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, userModel.getUserEmail());
+                                        editor.putString(ConstantManager.PREF_TITLE_USER_DP_URL, userModel.getUserDPUrl());
+                                        editor.apply();
+
+                                        mobileNumber = userModel.getUserMobile();
+                                        updateUserStatus();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
                         }
                     }
                 })
@@ -117,11 +143,24 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.i(TAG, "Signing In failed" + e.getMessage());
-                        Snackbar snackbar = Snackbar.make(linearLayout, "Account does not exist", Snackbar.LENGTH_SHORT);
+                        Snackbar snackbar = Snackbar.make(linearLayout, "Please Check Login Credentials", Snackbar.LENGTH_SHORT);
                         snackbar.show();
                         buttonVerfiy.setProgress(-1);
                     }
                 });
+    }
+
+    private void updateUserStatus() {
+        databaseReference = FirebaseDatabase.getInstance().getReference(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE).child(mobileNumber);
+        UserStatusModel userStatusModel = new UserStatusModel(true, true);
+        databaseReference.setValue(userStatusModel).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Intent intent = new Intent(LoginUsingEmailActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     @Override

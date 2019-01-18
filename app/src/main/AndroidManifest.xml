@@ -1,10 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Created by Sujoy Datta. Copyright (c) 2018. All rights reserved.
-  ~
-  ~ To the person who is reading this..
-  ~ When you finally understand how this works, please do explain it to me too at sujoydatta26@gmail.com
-  ~ P.S.: In case you are planning to use this without mentioning me, you will be met with mean judgemental looks and sarcastic comments.
--->
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.morningstar.chattr">
@@ -12,13 +6,15 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:allowBackup="true"
+        android:name=".CustomApplication"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".activities.LoadingActivity"></activity>
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.SplashActivity">
             <intent-filter>
@@ -27,11 +23,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.PhoneLoginActivity" />
         <activity android:name=".activities.LoginUsingEmailActivity" />
         <activity android:name=".activities.NoNetworkActivity" />
         <activity android:name=".activities.RegisterUsingEmail" />
-        <activity android:name=".activities.AccountDetailsActivity"></activity>
+        <activity android:name=".activities.AccountDetailsActivity" />
     </application>
 
 </manifest>

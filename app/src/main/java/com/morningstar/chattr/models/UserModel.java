@@ -8,30 +8,21 @@
 
 package com.morningstar.chattr.models;
 
+import com.google.firebase.database.PropertyName;
+
 public class UserModel {
 
-    private String userUserName;
     private String userName;
     private String userSurname;
     private String userEmail;
     private String userMobile;
     private String userDPUrl;
-    private String userId;
 
     public UserModel() {
         //Empty constructor
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public UserModel(String userUserName, String userName, String userSurname, String userEmail, String userMobile, String userDPUrl) {
-        this.userUserName = userUserName;
+    public UserModel(String userName, String userSurname, String userEmail, String userMobile, String userDPUrl) {
         this.userName = userName;
         this.userSurname = userSurname;
         this.userEmail = userEmail;
@@ -39,50 +30,52 @@ public class UserModel {
         this.userDPUrl = userDPUrl;
     }
 
-    public String getUserUserName() {
-        return userUserName;
-    }
-
-    public void setUserUserName(String userUserName) {
-        this.userUserName = userUserName;
-    }
-
+    @PropertyName("Name")
     public String getUserName() {
         return userName;
     }
 
+    @PropertyName("Name")
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
+    @PropertyName("Surname")
     public String getUserSurname() {
         return userSurname;
     }
 
+    @PropertyName("Surname")
     public void setUserSurname(String userSurname) {
         this.userSurname = userSurname;
     }
 
+    @PropertyName("Email")
     public String getUserEmail() {
         return userEmail;
     }
 
+    @PropertyName("Email")
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
     }
 
+    @PropertyName("Mobile Number")
     public String getUserMobile() {
         return userMobile;
     }
 
+    @PropertyName("Mobile Number")
     public void setUserMobile(String userMobile) {
         this.userMobile = userMobile;
     }
 
+    @PropertyName("Dp Url")
     public String getUserDPUrl() {
         return userDPUrl;
     }
 
+    @PropertyName("Dp Url")
     public void setUserDPUrl(String userDPUrl) {
         this.userDPUrl = userDPUrl;
     }

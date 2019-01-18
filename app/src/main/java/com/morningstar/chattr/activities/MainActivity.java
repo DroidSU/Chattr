@@ -21,6 +21,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
+import com.morningstar.chattr.models.UserStatusModel;
+import com.morningstar.chattr.utils.DrawerUtils;
 
 import java.util.Objects;
 
@@ -46,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.mainActivityToolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Chattr");
+
+        DrawerUtils.getDrawer(this, toolbar);
+
         sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
         mobileNumber = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_MOBILE, null);
 
@@ -79,17 +84,18 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_logout:
-                databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE).child(mobileNumber)
-                        .child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN);
-                databaseReference.setValue(false).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        firebaseAuth.signOut();
-                        Intent intent = new Intent(MainActivity.this, RegisterUsingEmail.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
+                databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE).child(mobileNumber);
+                UserStatusModel userStatusModel = new UserStatusModel(false, false);
+                databaseReference.setValue(userStatusModel)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                firebaseAuth.signOut();
+                                Intent intent = new Intent(MainActivity.this, RegisterUsingEmail.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
                 break;
         }
         return true;

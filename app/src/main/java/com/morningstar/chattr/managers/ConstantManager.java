@@ -12,9 +12,10 @@ public class ConstantManager {
 
     public static final String SHARED_PREF_FILE_NAME = "ChattrPref";
     public static final String PREF_TITLE_USER_MOBILE = "user_mobile";
-    public static final String PREF_TITLE_USER_ID = "UID";
     public static final String PREF_TITLE_USER_EMAIL = "user_email";
-    public static final String PREF_TITLE_USER_USERNAME = "user_username";
+    public static final String PREF_TITLE_USER_NAME = "user_name";
+    public static final String PREF_TITLE_USER_SURNAME = "user_surname";
+    public static final String PREF_TITLE_USER_DP_URL = "user_dp_url";
 
     public static final String FIREBASE_USERS_TABLE = "users";
     public static final String FIREBASE_PHONE_NUMBERS_TABLE = "phone numbers";
