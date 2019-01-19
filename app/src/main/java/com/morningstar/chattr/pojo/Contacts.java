@@ -8,29 +8,14 @@
 
 package com.morningstar.chattr.pojo;
 
-import android.content.Context;
-
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 public class Contacts extends RealmObject {
 
     @PrimaryKey
     private String contactNumber;
-
     private String contactName;
-
-    @Ignore
-    private Context context;
-
-    public Contacts() {
-        //Empty Constructor
-    }
-
-    public Contacts(Context context) {
-        this.context = context;
-    }
 
     public String getContactNumber() {
         return contactNumber;

@@ -11,6 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/accountDetailsRootLayout"
+    android:background="@drawable/gradient_background"
     tools:context=".activities.AccountDetailsActivity">
 
     <LinearLayout
@@ -67,8 +68,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Name"
-                android:textColor="@android:color/black"
-                android:textSize="18sp" />
+                android:textColor="@color/md_white_1000"
+                android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -76,8 +77,8 @@
                 android:layout_marginStart="5dp"
                 android:layout_weight="1"
                 android:text="Surname"
-                android:textColor="@android:color/black"
-                android:textSize="18sp" />
+                android:textColor="@color/md_white_1000"
+                android:textSize="20sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -96,7 +97,7 @@
                 android:layout_weight="1"
                 android:hint="Name"
                 android:inputType="textPersonName"
-                android:textColor="@android:color/black"
+                android:textColor="@color/md_white_1000"
                 android:textSize="18sp" />
 
             <EditText
@@ -107,7 +108,7 @@
                 android:layout_weight="1"
                 android:hint="Surname"
                 android:inputType="textPersonName"
-                android:textColor="@android:color/black"
+                android:textColor="@color/md_white_1000"
                 android:textSize="18sp" />
         </LinearLayout>
 
@@ -117,8 +118,8 @@
             android:layout_marginStart="30dp"
             android:layout_marginTop="20dp"
             android:text="Username"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textColor="@color/md_white_1000"
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/accountUserName"
@@ -129,7 +130,7 @@
             android:layout_marginEnd="30dp"
             android:hint="Username"
             android:inputType="text"
-            android:textColor="@android:color/black"
+            android:textColor="@color/md_white_1000"
             android:textSize="18sp" />
 
         <TextView
@@ -138,8 +139,8 @@
             android:layout_marginStart="30dp"
             android:layout_marginTop="20dp"
             android:text="Phone Number"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textColor="@color/md_white_1000"
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/accountPhoneNumber"
@@ -150,7 +151,7 @@
             android:layout_marginEnd="30dp"
             android:hint="Mobile Number"
             android:inputType="phone"
-            android:textColor="@android:color/black"
+            android:textColor="@color/md_white_1000"
             android:textSize="18sp" />
 
         <Button
@@ -163,6 +164,7 @@
             android:layout_marginBottom="20dp"
             android:background="@drawable/roundedbutton"
             android:text="Update Profile"
-            android:textColor="#FDFEFE" />
+            android:textColor="@color/md_black_1000"
+            android:textSize="16sp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
