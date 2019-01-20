@@ -203,7 +203,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            UserStatusModel userStatusModel = new UserStatusModel(true, true);
+                            UserStatusModel userStatusModel = new UserStatusModel(true, true, null);
                             statusTableReference.setValue(userStatusModel)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
@@ -252,7 +252,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, firebaseUser.getEmail());
         editor.apply();
         progressDialog.dismiss();
-        Intent intent = new Intent(AccountDetailsActivity.this, MainActivity.class);
+        Intent intent = new Intent(AccountDetailsActivity.this, LoadingActivity.class);
         startActivity(intent);
         finish();
     }

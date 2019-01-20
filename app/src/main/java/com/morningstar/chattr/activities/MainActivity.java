@@ -13,25 +13,31 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
-import com.morningstar.chattr.models.UserStatusModel;
 import com.morningstar.chattr.utils.DrawerUtils;
 
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
+    private LinearLayout rootLayout;
+
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference databaseReference;
@@ -46,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         toolbar = findViewById(R.id.mainActivityToolbar);
+        rootLayout = findViewById(R.id.mainActivityRootLayout);
+
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Chattr");
 
@@ -84,21 +92,44 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_logout:
-                databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE).child(mobileNumber);
-                UserStatusModel userStatusModel = new UserStatusModel(false, false);
-                databaseReference.setValue(userStatusModel)
+                logOutUser();
+                break;
+        }
+        return true;
+    }
+
+    private void logOutUser() {
+        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE)
+                .child(mobileNumber);
+        databaseReference.child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN)
+                .setValue(false).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                databaseReference.child(ConstantManager.FIREBASE_IS_LOGGED_IN_COLUMN).setValue(false)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 firebaseAuth.signOut();
-                                Intent intent = new Intent(MainActivity.this, RegisterUsingEmail.class);
+                                Intent intent = new Intent(MainActivity.this, LoginUsingEmailActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
                         });
-                break;
-        }
-        return true;
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Snackbar snackbar = Snackbar.make(rootLayout, "Could not sign out at the moment", Snackbar.LENGTH_SHORT);
+                        snackbar.setAction("TRY AGAIN", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                logOutUser();
+                            }
+                        });
+                        snackbar.show();
+                    }
+                });
     }
 
     @Override

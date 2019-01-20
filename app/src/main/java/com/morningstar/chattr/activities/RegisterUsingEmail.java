@@ -37,6 +37,8 @@ public class RegisterUsingEmail extends AppCompatActivity {
 
     private EditText editTextEmail;
     private EditText editTextPassword;
+    private EditText editTextCOnfirmPassword;
+
     private ActionProcessButton buttonSignUp;
     private LinearLayout linearLayout;
     private TextView textViewSignIn;
@@ -59,6 +61,7 @@ public class RegisterUsingEmail extends AppCompatActivity {
         buttonSignUp = findViewById(R.id.registerConfirm);
         linearLayout = findViewById(R.id.registerUsingEmailRootLayout);
         textViewSignIn = findViewById(R.id.signIn);
+        editTextCOnfirmPassword = findViewById(R.id.registerPasswordConfirm);
 
         buttonSignUp.setMode(ActionProcessButton.Mode.ENDLESS);
         buttonSignUp.setProgress(0);
@@ -68,15 +71,20 @@ public class RegisterUsingEmail extends AppCompatActivity {
             public void onClick(View v) {
                 emailAddress = editTextEmail.getText().toString();
                 password = editTextPassword.getText().toString();
+
                 buttonSignUp.setProgress(99);
                 buttonSignUp.setMode(ActionProcessButton.Mode.ENDLESS);
-                if (!TextUtils.isEmpty(emailAddress) && !TextUtils.isEmpty(password)) {
+                if (!TextUtils.isEmpty(emailAddress) && !TextUtils.isEmpty(password) && password.equals(editTextCOnfirmPassword.getText().toString())) {
                     signUpNewUser();
                 } else {
                     if (TextUtils.isEmpty(emailAddress))
                         editTextEmail.setError("Required");
                     if (TextUtils.isEmpty(password))
                         editTextPassword.setError("Required");
+                    if (!password.equals(editTextCOnfirmPassword.getText().toString())) {
+                        editTextPassword.setError("Passwords need to match");
+                        editTextCOnfirmPassword.setError("Passwords need to match");
+                    }
                     buttonSignUp.setProgress(0);
                 }
             }

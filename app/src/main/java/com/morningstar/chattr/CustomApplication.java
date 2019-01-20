@@ -28,7 +28,7 @@ public class CustomApplication extends Application {
         super.onCreate();
         Realm.init(this);
 
-        RealmConfiguration config = new RealmConfiguration.Builder().name("chattrRealm.realm").build();
+        RealmConfiguration config = new RealmConfiguration.Builder().name("ChattrRealm.realm").build();
         Realm.setDefaultConfiguration(config);
 
         //Initialize and create image loader logic using glide

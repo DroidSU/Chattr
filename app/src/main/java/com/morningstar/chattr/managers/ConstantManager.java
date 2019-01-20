@@ -26,6 +26,8 @@ public class ConstantManager {
     public static final String FIREBASE_DP_LINK_COLUMN = "dp link";
     public static final String FIREBASE_EMAIL_COLUMN = "Email";
     public static final String FIREBASE_IS_ONLINE_COLUMN = "Is_Online";
+    public static final String FIREBASE_USER_STATUS_COLUMN = "Status";
+    public static final String FIREBASE_IS_LOGGED_IN_COLUMN = "Is_LoggedIn";
 
     public static final String STRING_USERNAME = "username";
     public static final String STRING_NAME = "name";

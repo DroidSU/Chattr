@@ -27,20 +27,15 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="50dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="100dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_logo" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_chat" />
 
             </LinearLayout>
 
@@ -48,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="40dp"
                 android:text="Email Address: "
                 android:textColor="@color/md_white_1000"
                 android:textSize="20sp" />
@@ -84,6 +79,25 @@
                 android:inputType="textPassword"
                 android:textColor="@color/md_white_1000" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="20dp"
+                android:text="Confirm Password: "
+                android:textColor="@color/md_white_1000"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/registerPasswordConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="50dp"
+                android:hint="password"
+                android:inputType="textPassword"
+                android:textColor="@color/md_white_1000" />
             <com.dd.processbutton.iml.ActionProcessButton
                 android:id="@+id/registerConfirm"
                 android:layout_width="wrap_content"
@@ -98,7 +112,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="50dp"
                 android:text="Already Registered? Sign in here"
                 android:textColor="@android:color/holo_blue_dark"
                 android:textSize="18sp"

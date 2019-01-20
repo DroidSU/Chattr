@@ -14,10 +14,22 @@ public class UserStatusModel {
 
     private boolean isLoggedIn;
     private boolean isOnline;
+    private String userStatus;
 
-    public UserStatusModel(boolean isLoggedIn, boolean isOnline) {
+    public UserStatusModel(boolean isLoggedIn, boolean isOnline, String userStatus) {
         this.isLoggedIn = isLoggedIn;
         this.isOnline = isOnline;
+        this.userStatus = userStatus;
+    }
+
+    @PropertyName("Status")
+    public String getUserStatus() {
+        return userStatus;
+    }
+
+    @PropertyName("Status")
+    public void setUserStatus(String userStatus) {
+        this.userStatus = userStatus;
     }
 
     @PropertyName("Is_LoggedIn")

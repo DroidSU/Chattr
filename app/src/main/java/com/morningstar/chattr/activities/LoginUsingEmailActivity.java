@@ -152,11 +152,11 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
 
     private void updateUserStatus() {
         databaseReference = FirebaseDatabase.getInstance().getReference(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE).child(mobileNumber);
-        UserStatusModel userStatusModel = new UserStatusModel(true, true);
+        UserStatusModel userStatusModel = new UserStatusModel(true, true, null);
         databaseReference.setValue(userStatusModel).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Intent intent = new Intent(LoginUsingEmailActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginUsingEmailActivity.this, LoadingActivity.class);
                 startActivity(intent);
                 finish();
             }

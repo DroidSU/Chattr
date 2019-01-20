@@ -6,24 +6,16 @@
  * P.S.: In case you are planning to use this without mentioning me, you will be met with mean judgemental looks and sarcastic comments.
  */
 
-package com.morningstar.chattr.pojo;
+package com.morningstar.chattr.models;
 
-import io.realm.RealmObject;
+public class ContactsModel {
 
-public class Contacts extends RealmObject {
-
+    private String contactID;
+    private String contactName;
     private String contactNumber;
 
-    private String contactName;
-    private boolean isAdded;
-    private String contactID;
-
-    public boolean isAdded() {
-        return isAdded;
-    }
-
-    public void setAdded(boolean added) {
-        isAdded = added;
+    public ContactsModel() {
+        //Empty Constructor
     }
 
     public String getContactID() {
@@ -34,19 +26,19 @@ public class Contacts extends RealmObject {
         this.contactID = contactID;
     }
 
-    public String getContactNumber() {
-        return contactNumber;
-    }
-
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
-    }
-
     public String getContactName() {
         return contactName;
     }
 
     public void setContactName(String contactName) {
         this.contactName = contactName;
+    }
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
     }
 }
