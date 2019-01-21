@@ -34,4 +34,8 @@ public class ConstantManager {
     public static final String STRING_SURNAME = "surname";
     public static final String STRING_MOBILE_NUMBER = "mobile_number";
     public static final String STRING_EMAIL = "email";
+    public static final String CONTACT_NUMBER = "contactNumber";
+    public static final String CONTACT_NAME = "contactName";
+    public static final String CONTACT_ID = "contactID";
+    public static final String IS_CONTACT_ADDED = "isAdded";
 }

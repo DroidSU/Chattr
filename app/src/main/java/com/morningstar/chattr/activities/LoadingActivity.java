@@ -20,7 +20,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.morningstar.chattr.R;
+import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.models.ContactsModel;
 import com.morningstar.chattr.pojo.Contacts;
 
@@ -40,19 +46,16 @@ public class LoadingActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private TextView textViewProgressStatus;
 
-    private ContentResolver contentResolver;
-    private Cursor cursor;
-
     private int totalContactCount = 0;
     private int currentContactCount = 0;
 
     private String permissionItem = "";
 
     private Realm realm;
-    private ContactsModel contactsModel;
     private ArrayList<ContactsModel> contactsModelArrayList;
-    private String contactID;
     private Contacts contacts;
+
+    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,16 +97,16 @@ public class LoadingActivity extends AppCompatActivity {
         progressBar.setProgress(0);
         textViewProgressStatus.setText("Fetching contacts from phone...");
 
-        contentResolver = getContentResolver();
-        cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        ContentResolver contentResolver = getContentResolver();
+        Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 
         totalContactCount = cursor != null ? cursor.getCount() : 0;
 
         if (cursor != null && cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
                 currentContactCount += 1;
-                contactsModel = new ContactsModel();
-                contactID = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                ContactsModel contactsModel = new ContactsModel();
+                String contactID = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                 contactsModel.setContactID(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID)));
                 contactsModel.setContactName(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)));
                 if (Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
@@ -125,7 +128,9 @@ public class LoadingActivity extends AppCompatActivity {
             progressBar.setProgress(100);
         }
 
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
 
         addContactsToDb();
     }
@@ -161,11 +166,46 @@ public class LoadingActivity extends AppCompatActivity {
 
 
         Toast.makeText(this, "All contacts have been added", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
+
+        syncWithFirebase();
     }
 
+    private void syncWithFirebase() {
+        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String number = snapshot.getKey();
+                        Contacts contacts = realm.where(Contacts.class).equalTo(ConstantManager.CONTACT_NUMBER, number).findFirst();
+                        if (contacts != null) {
+                            contacts.setAdded(true);
+                            try {
+                                realm.executeTransaction(new Realm.Transaction() {
+                                    @Override
+                                    public void execute(Realm realm) {
+                                        realm.copyToRealmOrUpdate(contacts);
+                                        Toast.makeText(LoadingActivity.this, "Added: " + number, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } catch (Exception e) {
+                                Log.i(TAG, "Sync failed: " + e.getMessage());
+                            }
+                        }
+                    }
+                    Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     @Override
     protected void onDestroy() {

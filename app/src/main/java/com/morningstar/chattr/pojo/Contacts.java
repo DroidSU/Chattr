@@ -13,7 +13,6 @@ import io.realm.RealmObject;
 public class Contacts extends RealmObject {
 
     private String contactNumber;
-
     private String contactName;
     private boolean isAdded;
     private String contactID;
