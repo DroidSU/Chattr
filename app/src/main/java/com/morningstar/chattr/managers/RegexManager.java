@@ -11,25 +11,26 @@ package com.morningstar.chattr.managers;
 public class RegexManager {
 
     public static String removeCountryCode(String phoneNumber) {
-        if (phoneNumber.contains("+") && phoneNumber.length() > 11) {
-            phoneNumber = phoneNumber.substring(3);
-        } else {
-            phoneNumber = phoneNumber.substring(1);
-        }
+        if (phoneNumber.length() > 10) {
+            phoneNumber = RegexManager.removeCharacterFromNumber(phoneNumber);
 
-        if (phoneNumber.length() > 10 && phoneNumber.contains(" ")) {
-            return RegexManager.removeSpaceFromNumber(phoneNumber);
+            if (phoneNumber.length() == 12)
+                phoneNumber = phoneNumber.substring(2);
+            else if (phoneNumber.length() == 11)
+                phoneNumber = phoneNumber.substring(1);
         }
         return phoneNumber;
     }
 
-    private static String removeSpaceFromNumber(String phoneNumber) {
-        while (phoneNumber.contains(" ")) {
-            int index = phoneNumber.indexOf(" ");
-            String spliString1 = phoneNumber.split(" ")[0];
-            String spliString2 = phoneNumber.split(" ")[1];
-            phoneNumber = spliString1 + spliString2;
+    private static String removeCharacterFromNumber(String number) {
+        number = number.trim();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < number.length(); i++) {
+            if (Character.isDigit(number.charAt(i))) {
+                stringBuilder.append(number.charAt(i));
+            }
         }
-        return phoneNumber;
+
+        return stringBuilder.toString();
     }
 }

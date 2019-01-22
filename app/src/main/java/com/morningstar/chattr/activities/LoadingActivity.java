@@ -83,7 +83,13 @@ public class LoadingActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{permissionItem}, READ_CONTACTS_REQUEST_CODE);
             }
         } else {
-            getPhoneContacts();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    getPhoneContacts();
+                }
+            })
+                    .start();
         }
     }
 
@@ -170,36 +176,41 @@ public class LoadingActivity extends AppCompatActivity {
     }
 
     private void syncWithFirebase(ArrayList<String> arrayList) {
-        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE);
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        new Thread(new Runnable() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (String mobNumber : arrayList) {
-                    if (dataSnapshot.child(mobNumber).exists()) {
-                        Contacts contacts = realm.where(Contacts.class).equalTo(ConstantManager.CONTACT_NUMBER, mobNumber).findFirst();
-                        if (contacts != null) {
-                            try {
-                                realm.executeTransaction(new Realm.Transaction() {
-                                    @Override
-                                    public void execute(Realm realm) {
-                                        contacts.setAdded(true);
+            public void run() {
+                databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE);
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (String mobNumber : arrayList) {
+                            if (dataSnapshot.child(mobNumber).exists()) {
+                                Contacts contacts = realm.where(Contacts.class).equalTo(ConstantManager.CONTACT_NUMBER, mobNumber).findFirst();
+                                if (contacts != null) {
+                                    try {
+                                        realm.executeTransaction(new Realm.Transaction() {
+                                            @Override
+                                            public void execute(Realm realm) {
+                                                contacts.setAdded(true);
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        Log.i(TAG, "Updating sync status failed");
+                                        Toast.makeText(LoadingActivity.this, "Updating sync failed", Toast.LENGTH_SHORT).show();
                                     }
-                                });
-                            } catch (Exception e) {
-                                Log.i(TAG, "Updating sync status failed");
-                                Toast.makeText(LoadingActivity.this, "Updating sync failed", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
+                        launchNextActivity();
                     }
-                }
-                launchNextActivity();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                    }
+                });
             }
-        });
+        }).start();
 
 //        launchNextActivity();
     }
