@@ -27,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
+import com.morningstar.chattr.managers.RegexManager;
 import com.morningstar.chattr.models.ContactsModel;
 import com.morningstar.chattr.pojo.Contacts;
 
@@ -52,7 +53,8 @@ public class LoadingActivity extends AppCompatActivity {
     private String permissionItem = "";
 
     private Realm realm;
-    private ArrayList<ContactsModel> contactsModelArrayList;
+    private ArrayList<String> contactNumbersArrayList;
+    private ContactsModel contactsModel;
     private Contacts contacts;
 
     private DatabaseReference databaseReference;
@@ -65,7 +67,7 @@ public class LoadingActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.loadingActivityProgressBar);
         textViewProgressStatus = findViewById(R.id.loadingActivityProgressStatus);
 
-        contactsModelArrayList = new ArrayList<>();
+        contactNumbersArrayList = new ArrayList<>();
         realm = Realm.getDefaultInstance();
 
         permissionItem = Manifest.permission.READ_CONTACTS;
@@ -105,7 +107,7 @@ public class LoadingActivity extends AppCompatActivity {
         if (cursor != null && cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
                 currentContactCount += 1;
-                ContactsModel contactsModel = new ContactsModel();
+                contactsModel = new ContactsModel();
                 String contactID = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                 contactsModel.setContactID(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID)));
                 contactsModel.setContactName(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)));
@@ -115,13 +117,16 @@ public class LoadingActivity extends AppCompatActivity {
 
                     if (phoneCursor != null) {
                         while (phoneCursor.moveToNext()) {
-                            contactsModel.setContactNumber(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+                            contactsModel.setContactNumber(RegexManager.removeCountryCode(
+                                    phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))));
+
+                            addContactsToDb();
                         }
                         phoneCursor.close();
                     }
                 }
                 progressBar.setProgress((currentContactCount / totalContactCount) * 100);
-                contactsModelArrayList.add(contactsModel);
+                textViewProgressStatus.setText("Looking for chattrs you know...");
             }
         } else {
             Toast.makeText(this, "Contacts could not be fetched", Toast.LENGTH_SHORT).show();
@@ -130,74 +135,64 @@ public class LoadingActivity extends AppCompatActivity {
 
         if (cursor != null) {
             cursor.close();
+            Toast.makeText(this, "All contacts have been added", Toast.LENGTH_SHORT).show();
         }
 
-        addContactsToDb();
+        syncWithFirebase(contactNumbersArrayList);
+    }
+
+    private void launchNextActivity() {
+        Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void addContactsToDb() {
-        textViewProgressStatus.setText("Looking for chattrs you know...");
-        progressBar.setProgress(0);
-        currentContactCount = 0;
-        contacts = new Contacts();
-        for (ContactsModel model : contactsModelArrayList) {
-            currentContactCount += 1;
-            try {
-                if (realm.where(Contacts.class).equalTo("contactNumber", model.getContactNumber()).findAll().size() == 0) {
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            realm.createObject(Contacts.class);
-                            contacts.setContactNumber(model.getContactNumber());
-                            contacts.setContactName(model.getContactName());
-                            contacts.setAdded(false);
-                            contacts.setContactID(model.getContactID());
-                            realm.copyToRealm(contacts);
-                        }
-                    });
-                }
-            } catch (Exception e) {
-                Log.i(TAG, "Realm failed: " + e.getMessage());
-                Toast.makeText(this, "Could not sync contacts", Toast.LENGTH_SHORT).show();
+        try {
+            if (realm.where(Contacts.class).equalTo("contactNumber", contactsModel.getContactNumber()).findAll().size() == 0) {
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        contacts = realm.createObject(Contacts.class);
+                        contacts.setContactNumber(contactsModel.getContactNumber());
+                        contacts.setContactName(contactsModel.getContactName());
+                        contacts.setAdded(false);
+                        contacts.setContactID(contactsModel.getContactID());
+                    }
+                });
+
+                contactNumbersArrayList.add(contactsModel.getContactNumber());
             }
-
-            progressBar.setProgress((currentContactCount / totalContactCount) * 100);
+        } catch (Exception e) {
+            Log.i(TAG, "Realm failed: " + e.getMessage());
+            Toast.makeText(this, "Could not sync contacts", Toast.LENGTH_SHORT).show();
         }
-
-
-        Toast.makeText(this, "All contacts have been added", Toast.LENGTH_SHORT).show();
-
-        syncWithFirebase();
     }
 
-    private void syncWithFirebase() {
+    private void syncWithFirebase(ArrayList<String> arrayList) {
         databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE);
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        String number = snapshot.getKey();
-                        Contacts contacts = realm.where(Contacts.class).equalTo(ConstantManager.CONTACT_NUMBER, number).findFirst();
+                for (String mobNumber : arrayList) {
+                    if (dataSnapshot.child(mobNumber).exists()) {
+                        Contacts contacts = realm.where(Contacts.class).equalTo(ConstantManager.CONTACT_NUMBER, mobNumber).findFirst();
                         if (contacts != null) {
-                            contacts.setAdded(true);
                             try {
                                 realm.executeTransaction(new Realm.Transaction() {
                                     @Override
                                     public void execute(Realm realm) {
-                                        realm.copyToRealmOrUpdate(contacts);
-                                        Toast.makeText(LoadingActivity.this, "Added: " + number, Toast.LENGTH_SHORT).show();
+                                        contacts.setAdded(true);
                                     }
                                 });
                             } catch (Exception e) {
-                                Log.i(TAG, "Sync failed: " + e.getMessage());
+                                Log.i(TAG, "Updating sync status failed");
+                                Toast.makeText(LoadingActivity.this, "Updating sync failed", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
-                    Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
                 }
+                launchNextActivity();
             }
 
             @Override
@@ -205,6 +200,8 @@ public class LoadingActivity extends AppCompatActivity {
 
             }
         });
+
+//        launchNextActivity();
     }
 
     @Override

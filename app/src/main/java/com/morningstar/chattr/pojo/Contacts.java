@@ -8,8 +8,10 @@
 
 package com.morningstar.chattr.pojo;
 
+import androidx.annotation.Keep;
 import io.realm.RealmObject;
 
+@Keep
 public class Contacts extends RealmObject {
 
     private String contactNumber;

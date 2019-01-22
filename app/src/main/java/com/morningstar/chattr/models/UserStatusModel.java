@@ -10,6 +10,9 @@ package com.morningstar.chattr.models;
 
 import com.google.firebase.database.PropertyName;
 
+import androidx.annotation.Keep;
+
+@Keep
 public class UserStatusModel {
 
     private boolean isLoggedIn;

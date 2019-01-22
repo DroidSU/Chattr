@@ -8,6 +8,9 @@
 
 package com.morningstar.chattr.models;
 
+import androidx.annotation.Keep;
+
+@Keep
 public class ContactsModel {
 
     private String contactID;
