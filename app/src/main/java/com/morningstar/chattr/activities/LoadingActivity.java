@@ -83,13 +83,8 @@ public class LoadingActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{permissionItem}, READ_CONTACTS_REQUEST_CODE);
             }
         } else {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    getPhoneContacts();
-                }
-            })
-                    .start();
+            textViewProgressStatus.setText("Looking for chattrs you know...");
+            getPhoneContacts();
         }
     }
 
@@ -103,7 +98,6 @@ public class LoadingActivity extends AppCompatActivity {
 
     private void getPhoneContacts() {
         progressBar.setProgress(0);
-        textViewProgressStatus.setText("Fetching contacts from phone...");
 
         ContentResolver contentResolver = getContentResolver();
         Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
@@ -132,7 +126,6 @@ public class LoadingActivity extends AppCompatActivity {
                     }
                 }
                 progressBar.setProgress((currentContactCount / totalContactCount) * 100);
-                textViewProgressStatus.setText("Looking for chattrs you know...");
             }
         } else {
             Toast.makeText(this, "Contacts could not be fetched", Toast.LENGTH_SHORT).show();
@@ -141,7 +134,6 @@ public class LoadingActivity extends AppCompatActivity {
 
         if (cursor != null) {
             cursor.close();
-            Toast.makeText(this, "All contacts have been added", Toast.LENGTH_SHORT).show();
         }
 
         syncWithFirebase(contactNumbersArrayList);

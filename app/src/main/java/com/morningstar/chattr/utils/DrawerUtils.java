@@ -22,6 +22,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.morningstar.chattr.R;
+import com.morningstar.chattr.activities.AllContactsActivity;
 import com.morningstar.chattr.activities.MainActivity;
 
 import java.util.Objects;
@@ -33,10 +34,10 @@ public class DrawerUtils {
     public static void getDrawer(final Activity activity, Toolbar toolbar) {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        PrimaryDrawerItem drawerItemProfile = new PrimaryDrawerItem().withIdentifier(0).withName(R.string.string_profile);
-        PrimaryDrawerItem drawerItemRecentChats = new PrimaryDrawerItem().withIdentifier(0).withName(R.string.string_recent_chats);
-        PrimaryDrawerItem drawerItemGroups = new PrimaryDrawerItem().withIdentifier(0).withName(R.string.string_groups);
-        PrimaryDrawerItem drawerItemAllContacts = new PrimaryDrawerItem().withIdentifier(0).withName(R.string.string_all_contacts);
+        PrimaryDrawerItem drawerItemProfile = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.mipmap.ic_default_user).withName(R.string.string_profile);
+        PrimaryDrawerItem drawerItemRecentChats = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.drawable.ic_chat).withName(R.string.string_recent_chats);
+        PrimaryDrawerItem drawerItemGroups = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.mipmap.ic_group).withName(R.string.string_groups);
+        PrimaryDrawerItem drawerItemAllContacts = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.mipmap.ic_contacts).withName(R.string.string_all_contacts);
 
         ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem().withName(Objects.requireNonNull(firebaseUser).getDisplayName()).withEmail(firebaseUser.getEmail())
                 .withIcon(firebaseUser.getPhotoUrl());
@@ -59,6 +60,11 @@ public class DrawerUtils {
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         if (position == 2) {
                             Intent intent = new Intent(activity, MainActivity.class);
+                            activity.startActivity(intent);
+                            activity.finish();
+                        }
+                        if (position == 4) {
+                            Intent intent = new Intent(activity, AllContactsActivity.class);
                             activity.startActivity(intent);
                             activity.finish();
                         }
