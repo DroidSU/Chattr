@@ -10,6 +10,8 @@ package com.morningstar.chattr.activities;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.firebase.database.DatabaseReference;
 import com.morningstar.chattr.R;
@@ -76,5 +78,27 @@ public class AllContactsActivity extends AppCompatActivity {
         if (realm != null && !realm.isClosed()) {
             realm.close();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.all_contacts_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.all_contact_refresh:
+                refreshAllContacts();
+                break;
+        }
+
+        return true;
+    }
+
+    private void refreshAllContacts() {
+
     }
 }

@@ -11,14 +11,16 @@ package com.morningstar.chattr.managers;
 public class RegexManager {
 
     public static String removeCountryCode(String phoneNumber) {
-        if (phoneNumber.length() > 10) {
+        if (phoneNumber.length() >= 10) {
             phoneNumber = RegexManager.removeCharacterFromNumber(phoneNumber);
-
             if (phoneNumber.length() == 12)
                 phoneNumber = phoneNumber.substring(2);
             else if (phoneNumber.length() == 11)
                 phoneNumber = phoneNumber.substring(1);
+        } else {
+            phoneNumber = null;
         }
+
         return phoneNumber;
     }
 
