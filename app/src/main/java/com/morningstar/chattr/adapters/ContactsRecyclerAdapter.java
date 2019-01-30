@@ -16,7 +16,9 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.morningstar.chattr.R;
+import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.pojo.Contacts;
 
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
     public ContactsRecyclerAdapter(Context context, ArrayList<Contacts> contactsArrayList) {
         this.context = context;
         this.contactsArrayList = contactsArrayList;
+        databaseReference = FirebaseDatabase.getInstance().getReference(ConstantManager.FIREBASE_USERS_TABLE);
     }
 
     @NonNull

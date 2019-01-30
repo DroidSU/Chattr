@@ -11,6 +11,7 @@ package com.morningstar.chattr.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,14 +28,18 @@ import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.utils.DrawerUtils;
 
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import io.socket.client.IO;
+import io.socket.client.Socket;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     private Toolbar toolbar;
     private LinearLayout rootLayout;
 
@@ -45,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String mobileNumber = "";
     private String userName = "";
+
+    private Socket socket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +76,14 @@ public class MainActivity extends AppCompatActivity {
                     .child(mobileNumber).child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN);
             databaseReference.setValue(true);
         }
+
+        try {
+            socket = IO.socket(ConstantManager.IP_LOCALHOST);
+        } catch (URISyntaxException e) {
+            Log.i(TAG, "Socket connection failed: " + e.getMessage());
+        }
+
+        socket.connect();
     }
 
     @Override
@@ -142,5 +157,11 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(Void aVoid) {
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        socket.disconnect();
     }
 }

@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private static final String TAG = "SplashActivity";
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
 
@@ -35,7 +36,6 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         //start user sign in process
         final Handler handler = new Handler();
         final Runnable runnable = new Runnable() {

@@ -21,7 +21,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,6 +41,7 @@ import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.models.UserModel;
 import com.morningstar.chattr.models.UserStatusModel;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
@@ -266,7 +266,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 //get bitmap from uri
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uriProfileImage);
                 //display image on imageView using glide
-                Glide.with(this).load(bitmap).into(displayImageHolder);
+                Picasso.get().load(uriProfileImage).into(displayImageHolder);
                 //uploadToImageToStorage();               //upload the image to FireBase Storage
             } catch (IOException e) {
                 e.printStackTrace();
