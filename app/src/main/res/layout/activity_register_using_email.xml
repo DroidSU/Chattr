@@ -43,10 +43,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="32dp"
                 android:text="Email Address: "
                 android:textColor="@color/md_white_1000"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/registerEmail"
@@ -63,10 +63,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="18dp"
                 android:text="Password: "
                 android:textColor="@color/md_white_1000"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/registerPassword"
@@ -84,10 +84,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="18dp"
                 android:text="Confirm Password: "
                 android:textColor="@color/md_white_1000"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/registerPasswordConfirm"
@@ -114,7 +114,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="32dp"
                 android:text="Already Registered? Sign in here"
                 android:textColor="@android:color/holo_blue_dark"
                 android:textSize="18sp"

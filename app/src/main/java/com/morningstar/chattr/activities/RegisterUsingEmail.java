@@ -11,7 +11,7 @@ package com.morningstar.chattr.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -29,11 +29,17 @@ import com.google.firebase.auth.FirebaseUser;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.ProfileManager;
+import com.morningstar.chattr.services.UserRegistrationService;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import rx.subscriptions.CompositeSubscription;
 
 public class RegisterUsingEmail extends AppCompatActivity {
+
+    private static final String TAG = "RegisterUsingEmail";
 
     private EditText editTextEmail;
     private EditText editTextPassword;
@@ -50,18 +56,28 @@ public class RegisterUsingEmail extends AppCompatActivity {
     private String emailAddress;
     private String password;
 
+    private CompositeSubscription compositeSubscription;
+    private Socket socket;
+    private UserRegistrationService userRegistrationService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_using_email);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        compositeSubscription = new CompositeSubscription();                //setting up RX subscription
+
         editTextEmail = findViewById(R.id.registerEmail);
         editTextPassword = findViewById(R.id.registerPassword);
         buttonSignUp = findViewById(R.id.registerConfirm);
         linearLayout = findViewById(R.id.registerUsingEmailRootLayout);
         textViewSignIn = findViewById(R.id.signIn);
         editTextCOnfirmPassword = findViewById(R.id.registerPasswordConfirm);
+
+        connectToServer();
+
+        userRegistrationService = UserRegistrationService.newInstance();        //service to start the user registration
 
         buttonSignUp.setMode(ActionProcessButton.Mode.ENDLESS);
         buttonSignUp.setProgress(0);
@@ -74,19 +90,23 @@ public class RegisterUsingEmail extends AppCompatActivity {
 
                 buttonSignUp.setProgress(99);
                 buttonSignUp.setMode(ActionProcessButton.Mode.ENDLESS);
-                if (!TextUtils.isEmpty(emailAddress) && !TextUtils.isEmpty(password) && password.equals(editTextCOnfirmPassword.getText().toString())) {
-                    signUpNewUser();
-                } else {
-                    if (TextUtils.isEmpty(emailAddress))
-                        editTextEmail.setError("Required");
-                    if (TextUtils.isEmpty(password))
-                        editTextPassword.setError("Required");
-                    if (!password.equals(editTextCOnfirmPassword.getText().toString())) {
-                        editTextPassword.setError("Passwords need to match");
-                        editTextCOnfirmPassword.setError("Passwords need to match");
-                    }
-                    buttonSignUp.setProgress(0);
-                }
+
+                compositeSubscription.add(userRegistrationService.sendRegistrationInfo(editTextEmail, editTextPassword, editTextCOnfirmPassword, buttonSignUp, socket));
+
+
+//                if (!TextUtils.isEmpty(emailAddress) && !TextUtils.isEmpty(password) && password.equals(editTextCOnfirmPassword.getText().toString())) {
+//                    signUpNewUser();
+//                } else {
+//                    if (TextUtils.isEmpty(emailAddress))
+//                        editTextEmail.setError("Required");
+//                    if (TextUtils.isEmpty(password))
+//                        editTextPassword.setError("Required");
+//                    if (!password.equals(editTextCOnfirmPassword.getText().toString())) {
+//                        editTextPassword.setError("Passwords need to match");
+//                        editTextCOnfirmPassword.setError("Passwords need to match");
+//                    }
+//                    buttonSignUp.setProgress(0);
+//                }
             }
         });
 
@@ -98,6 +118,16 @@ public class RegisterUsingEmail extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void connectToServer() {
+        try {
+            socket = IO.socket(ConstantManager.IP_LOCALHOST);
+        } catch (Exception e) {
+            Log.i(TAG, "Connection failed: " + e.getMessage());
+            Toast.makeText(this, "Cannot connect to server", Toast.LENGTH_SHORT).show();
+        }
+        socket.connect();
     }
 
     private void signUpNewUser() {
@@ -139,5 +169,12 @@ public class RegisterUsingEmail extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        socket.disconnect();
+        compositeSubscription.clear();
     }
 }
