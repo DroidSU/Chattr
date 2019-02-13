@@ -92,20 +92,22 @@
 
             <EditText
                 android:id="@+id/accountName"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="Name"
                 android:inputType="textPersonName"
                 android:textColor="@color/md_white_1000"
+                android:maxLines="1"
                 android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/accountSurname"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_weight="1"
+                android:maxLines="1"
                 android:hint="Surname"
                 android:inputType="textPersonName"
                 android:textColor="@color/md_white_1000"
@@ -129,6 +131,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="30dp"
             android:hint="Username"
+            android:maxLines="1"
             android:inputType="text"
             android:textColor="@color/md_white_1000"
             android:textSize="18sp" />
@@ -151,6 +154,7 @@
             android:layout_marginEnd="30dp"
             android:hint="Mobile Number"
             android:inputType="phone"
+            android:maxLines="1"
             android:textColor="@color/md_white_1000"
             android:textSize="18sp" />
 

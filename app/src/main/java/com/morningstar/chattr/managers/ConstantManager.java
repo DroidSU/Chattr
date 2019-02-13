@@ -40,4 +40,10 @@ public class ConstantManager {
     public static final String CONTACT_ID = "contactID";
     public static final String IS_CONTACT_ADDED = "isAdded";
     public static final String STRING_PASSWORD = "password";
+
+    public static final String REGISTRATION_SUCCESS_MESSAGE = "REGISTRATION_SUCCESS";
+    public static final String REGISTRATION_FAILED_MESSAGE = "REGISTRATION_FAILED";
+
+    //SOCKET EVENT NAMES
+    public static final String REGISTRATION_COMPLETED_EVENT = "REGISTRATION_COMPLETE";
 }

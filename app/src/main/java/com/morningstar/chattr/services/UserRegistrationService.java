@@ -8,10 +8,15 @@
 
 package com.morningstar.chattr.services;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.dd.processbutton.iml.ActionProcessButton;
+import com.morningstar.chattr.activities.AccountDetailsActivity;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.UtilityManager;
 
@@ -28,6 +33,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class UserRegistrationService {
     private static final String TAG = "UserRegistrationService";
     private static UserRegistrationService userRegistrationService;
@@ -38,6 +45,8 @@ public class UserRegistrationService {
     private final int USER_ERROR_EMAIL_BAD_FORMAT = 5;
     private final int REGISTRATION_SUCCESS = 0;
     private final int REGISTRATION_FAILURE = -1;
+
+    private String emailAddress;
 
     public static UserRegistrationService newInstance() {
         if (userRegistrationService == null) {
@@ -78,6 +87,7 @@ public class UserRegistrationService {
                                 socket.emit("userData", jsonObject);
 
                                 RESULT_CODE = REGISTRATION_SUCCESS;
+                                emailAddress = userEmail;
                             } catch (JSONException e) {
                                 Log.i(TAG, "JSON Exception: " + e.getMessage());
                                 RESULT_CODE = REGISTRATION_FAILURE;
@@ -125,6 +135,47 @@ public class UserRegistrationService {
                         } else if (integer.equals(REGISTRATION_FAILURE)) {
                             button.setProgress(-1);
                             Log.i(TAG, "Registration failed");
+                        }
+                    }
+                });
+    }
+
+    //To get the response of registration from server
+    public Subscription receiveRegistrationResponse(String response, Activity activity, ActionProcessButton actionProcessButton) {
+        Observable<String> stringObservable = Observable.just(response);
+        return stringObservable
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<String, String>() {
+                    @Override
+                    public String call(String s) {
+                        return s;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(String response) {
+                        if (response.equalsIgnoreCase(ConstantManager.REGISTRATION_SUCCESS_MESSAGE)) {
+                            actionProcessButton.setProgress(100);
+                            SharedPreferences sharedPreferences = activity.getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, emailAddress);
+                            editor.apply();
+                            activity.startActivity(new Intent(activity, AccountDetailsActivity.class));
+                            activity.finish();
+                        } else {
+                            actionProcessButton.setProgress(-1);
+                            Toast.makeText(activity, response, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

@@ -19,22 +19,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dd.processbutton.iml.ActionProcessButton;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
-import com.morningstar.chattr.managers.ProfileManager;
 import com.morningstar.chattr.services.UserRegistrationService;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import io.socket.client.IO;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import rx.subscriptions.CompositeSubscription;
 
 public class RegisterUsingEmail extends AppCompatActivity {
@@ -76,6 +70,7 @@ public class RegisterUsingEmail extends AppCompatActivity {
         editTextCOnfirmPassword = findViewById(R.id.registerPasswordConfirm);
 
         connectToServer();
+        socket.on(ConstantManager.REGISTRATION_COMPLETED_EVENT, getRegistrationResponse());
 
         userRegistrationService = UserRegistrationService.newInstance();        //service to start the user registration
 
@@ -92,21 +87,6 @@ public class RegisterUsingEmail extends AppCompatActivity {
                 buttonSignUp.setMode(ActionProcessButton.Mode.ENDLESS);
 
                 compositeSubscription.add(userRegistrationService.sendRegistrationInfo(editTextEmail, editTextPassword, editTextCOnfirmPassword, buttonSignUp, socket));
-
-
-//                if (!TextUtils.isEmpty(emailAddress) && !TextUtils.isEmpty(password) && password.equals(editTextCOnfirmPassword.getText().toString())) {
-//                    signUpNewUser();
-//                } else {
-//                    if (TextUtils.isEmpty(emailAddress))
-//                        editTextEmail.setError("Required");
-//                    if (TextUtils.isEmpty(password))
-//                        editTextPassword.setError("Required");
-//                    if (!password.equals(editTextCOnfirmPassword.getText().toString())) {
-//                        editTextPassword.setError("Passwords need to match");
-//                        editTextCOnfirmPassword.setError("Passwords need to match");
-//                    }
-//                    buttonSignUp.setProgress(0);
-//                }
             }
         });
 
@@ -120,6 +100,16 @@ public class RegisterUsingEmail extends AppCompatActivity {
         });
     }
 
+    private Emitter.Listener getRegistrationResponse() {
+        return new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                String responseMessage = (String) args[0];
+                compositeSubscription.add(userRegistrationService.receiveRegistrationResponse(responseMessage, RegisterUsingEmail.this, buttonSignUp));
+            }
+        };
+    }
+
     private void connectToServer() {
         try {
             socket = IO.socket(ConstantManager.IP_LOCALHOST);
@@ -128,35 +118,6 @@ public class RegisterUsingEmail extends AppCompatActivity {
             Toast.makeText(this, "Cannot connect to server", Toast.LENGTH_SHORT).show();
         }
         socket.connect();
-    }
-
-    private void signUpNewUser() {
-        firebaseAuth.createUserWithEmailAndPassword(emailAddress, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            buttonSignUp.setProgress(100);
-                            sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, emailAddress);
-                            editor.apply();
-                            ProfileManager.userEmail = emailAddress;
-                            ProfileManager.userId = firebaseAuth.getUid();
-                            Intent intent = new Intent(RegisterUsingEmail.this, AccountDetailsActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Snackbar snackbar = Snackbar.make(linearLayout, "Account could not be registered", Snackbar.LENGTH_SHORT);
-                        snackbar.show();
-                        buttonSignUp.setProgress(-1);
-                    }
-                });
     }
 
     @Override
