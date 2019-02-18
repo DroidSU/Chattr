@@ -19,13 +19,10 @@ import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.activities.AllContactsActivity;
 import com.morningstar.chattr.activities.MainActivity;
-
-import java.util.Objects;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -39,12 +36,12 @@ public class DrawerUtils {
         PrimaryDrawerItem drawerItemGroups = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.mipmap.ic_group).withName(R.string.string_groups);
         PrimaryDrawerItem drawerItemAllContacts = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.mipmap.ic_contacts).withName(R.string.string_all_contacts);
 
-        ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem().withName(Objects.requireNonNull(firebaseUser).getDisplayName()).withEmail(firebaseUser.getEmail())
-                .withIcon(firebaseUser.getPhotoUrl());
+//        ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem().withName(Objects.requireNonNull(firebaseUser).getDisplayName()).withEmail(firebaseUser.getEmail())
+//                .withIcon(firebaseUser.getPhotoUrl());
 
         AccountHeader accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(activity)
-                .addProfiles(profileDrawerItem)
+//                .addProfiles(profileDrawerItem)
                 .build();
 
         Drawer drawer = new DrawerBuilder()

@@ -12,14 +12,15 @@ public class ConstantManager {
 
     public static final String IP_LOCALHOST = "http://192.168.0.103:3000";
     public static final String SHARED_PREF_FILE_NAME = "ChattrPref";
-    public static final String PREF_TITLE_USER_MOBILE = "user_mobile";
-    public static final String PREF_TITLE_USER_EMAIL = "user_email";
-    public static final String PREF_TITLE_USER_NAME = "user_name";
-    public static final String PREF_TITLE_USER_SURNAME = "user_surname";
-    public static final String PREF_TITLE_USER_DP_URL = "user_dp_url";
+    public static final String PREF_TITLE_USER_MOBILE = "USER_MOBILE";
+    public static final String PREF_TITLE_USER_EMAIL = "USER_EMAIL";
+    //    public static final String PREF_TITLE_USER_NAME = "USER_NAME";
+//    public static final String PREF_TITLE_USER_SURNAME = "USER_SURNAME";
+    public static final String PREF_TITLE_USER_DP_URL = "USER_DP_URL";
+    public static final String PREF_TITLE_USER_USERNAME = "USER_USERNAME";
 
-    public static final String FIREBASE_USERS_TABLE = "users";
-    public static final String FIREBASE_PHONE_NUMBERS_TABLE = "phone numbers";
+    public static final String FIREBASE_USERS_TABLE = "Users";
+    public static final String FIREBASE_PHONE_NUMBERS_TABLE = "Phone Numbers";
     public static final String FIREBASE_NAME_COLUMN = "Name";
     public static final String FIREBASE_SURNAME_COLUMN = "Surname";
     public static final String FIREBASE_USERNAME_COLUMN = "Username";
@@ -33,7 +34,7 @@ public class ConstantManager {
     public static final String STRING_USERNAME = "username";
     public static final String STRING_NAME = "name";
     public static final String STRING_SURNAME = "surname";
-    public static final String STRING_MOBILE_NUMBER = "mobile_number";
+    public static final String STRING_MOBILE_NUMBER = "mobNumber";
     public static final String STRING_EMAIL = "email";
     public static final String CONTACT_NUMBER = "contactNumber";
     public static final String CONTACT_NAME = "contactName";
@@ -46,4 +47,5 @@ public class ConstantManager {
 
     //SOCKET EVENT NAMES
     public static final String REGISTRATION_COMPLETED_EVENT = "REGISTRATION_COMPLETE";
+    public static final String FIREBASE_AUTH_TOKEN_GENERATED = "FIREBASE_AUTH_TOKEN_GENERATED";
 }

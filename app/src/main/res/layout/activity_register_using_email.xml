@@ -27,7 +27,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="80dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
@@ -39,73 +39,89 @@
 
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="32dp"
-                android:text="Email Address: "
-                android:textColor="@color/md_white_1000"
-                android:textSize="18sp" />
-
-            <EditText
-                android:id="@+id/registerEmail"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="50dp"
-                android:hint="email address"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/md_white_1000" />
+                android:layout_marginTop="40dp"
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="18dp"
-                android:text="Password: "
-                android:textColor="@color/md_white_1000"
-                android:textSize="18sp" />
+                <EditText
+                    android:id="@+id/registerEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="50dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="50dp"
+                    android:drawableStart="@drawable/ic_email_black_24dp"
+                    android:drawablePadding="5dp"
+                    android:ellipsize="end"
+                    android:hint="Email Address"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:textColor="@color/md_white_1000"
+                    android:textColorHint="@android:color/darker_gray"
+                    android:textSize="18sp" />
 
-            <EditText
-                android:id="@+id/registerPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="50dp"
-                android:hint="password"
-                android:textSize="18sp"
-                android:inputType="textPassword"
-                android:textColor="@color/md_white_1000" />
+                <EditText
+                    android:id="@+id/registerPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="50dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="50dp"
+                    android:drawableStart="@drawable/ic_text_white_24dp"
+                    android:drawableEnd="@drawable/ic_eye_white_24dp"
+                    android:drawablePadding="5dp"
+                    android:ellipsize="end"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:textColor="@color/md_white_1000"
+                    android:textColorHint="@android:color/darker_gray"
+                    android:textSize="18sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="18dp"
-                android:text="Confirm Password: "
-                android:textColor="@color/md_white_1000"
-                android:textSize="18sp" />
+                <EditText
+                    android:id="@+id/registerUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="50dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="50dp"
+                    android:drawableStart="@drawable/ic_account_circle_white_24dp"
+                    android:drawablePadding="5dp"
+                    android:ellipsize="end"
+                    android:hint="Username"
+                    android:inputType="textPersonName"
+                    android:maxLines="1"
+                    android:textColor="@color/md_white_1000"
+                    android:textColorHint="@android:color/darker_gray"
+                    android:textSize="18sp" />
 
-            <EditText
-                android:id="@+id/registerPasswordConfirm"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="50dp"
-                android:hint="password"
-                android:textSize="18sp"
-                android:inputType="textPassword"
-                android:textColor="@color/md_white_1000" />
+                <EditText
+                    android:id="@+id/registerMobileNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="50dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="50dp"
+                    android:drawableStart="@drawable/ic_phone_white_24dp"
+                    android:drawablePadding="5dp"
+                    android:ellipsize="end"
+                    android:hint="Mobile Number"
+                    android:inputType="phone"
+                    android:maxLines="1"
+                    android:textColor="@color/md_white_1000"
+                    android:textColorHint="@android:color/darker_gray"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
             <com.dd.processbutton.iml.ActionProcessButton
                 android:id="@+id/registerConfirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="40dp"
                 android:text="Sign Up"
                 android:textColor="@android:color/black" />
 
@@ -115,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="32dp"
-                android:text="Already Registered? Sign in here"
+                android:text="@string/already_registered_sign_in_here"
                 android:textColor="@android:color/holo_blue_dark"
                 android:textSize="18sp"
                 android:textStyle="italic|bold" />

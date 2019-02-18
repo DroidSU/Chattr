@@ -44,15 +44,9 @@ public class SplashActivity extends AppCompatActivity {
                 if (NetworkManager.isUserOnline(SplashActivity.this)) {
                     firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                     if (firebaseUser != null) {
-                        if (firebaseUser.getDisplayName() != null) {
-                            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            Intent intent = new Intent(SplashActivity.this, AccountDetailsActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
                     } else {
                         Intent intent = new Intent(SplashActivity.this, RegisterUsingEmail.class);
                         startActivity(intent);

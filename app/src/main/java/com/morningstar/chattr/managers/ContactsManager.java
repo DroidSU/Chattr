@@ -114,6 +114,8 @@ public class ContactsManager {
                         contacts.setContactName(contactsModel.getContactName());
                         contacts.setAdded(false);
                         contacts.setContactID(contactsModel.getContactID());
+
+                        Log.i(TAG, contacts.getContactName() + " added");
                     }
                 });
 

@@ -9,20 +9,17 @@
 package com.morningstar.chattr.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dd.processbutton.iml.ActionProcessButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
+import com.morningstar.chattr.managers.UtilityManager;
 import com.morningstar.chattr.services.UserRegistrationService;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,18 +34,11 @@ public class RegisterUsingEmail extends AppCompatActivity {
 
     private EditText editTextEmail;
     private EditText editTextPassword;
-    private EditText editTextCOnfirmPassword;
+    private EditText editTextUsername;
+    private EditText editTextUserMobile;
 
     private ActionProcessButton buttonSignUp;
-    private LinearLayout linearLayout;
     private TextView textViewSignIn;
-
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
-    private SharedPreferences sharedPreferences;
-
-    private String emailAddress;
-    private String password;
 
     private CompositeSubscription compositeSubscription;
     private Socket socket;
@@ -59,15 +49,14 @@ public class RegisterUsingEmail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_using_email);
 
-        firebaseAuth = FirebaseAuth.getInstance();
         compositeSubscription = new CompositeSubscription();                //setting up RX subscription
 
         editTextEmail = findViewById(R.id.registerEmail);
         editTextPassword = findViewById(R.id.registerPassword);
         buttonSignUp = findViewById(R.id.registerConfirm);
-        linearLayout = findViewById(R.id.registerUsingEmailRootLayout);
         textViewSignIn = findViewById(R.id.signIn);
-        editTextCOnfirmPassword = findViewById(R.id.registerPasswordConfirm);
+        editTextUsername = findViewById(R.id.registerUsername);
+        editTextUserMobile = findViewById(R.id.registerMobileNumber);
 
         connectToServer();
         socket.on(ConstantManager.REGISTRATION_COMPLETED_EVENT, getRegistrationResponse());
@@ -80,13 +69,23 @@ public class RegisterUsingEmail extends AppCompatActivity {
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                emailAddress = editTextEmail.getText().toString();
-                password = editTextPassword.getText().toString();
-
                 buttonSignUp.setProgress(99);
                 buttonSignUp.setMode(ActionProcessButton.Mode.ENDLESS);
 
-                compositeSubscription.add(userRegistrationService.sendRegistrationInfo(editTextEmail, editTextPassword, editTextCOnfirmPassword, buttonSignUp, socket));
+                String username = editTextUsername.getText().toString();
+                String phonenumber = editTextUserMobile.getText().toString();
+
+                boolean isUserNameTaken = UtilityManager.isUserNameTaken(username);
+                boolean isPhoneNumberRegistered = UtilityManager.isMobileNumberAlreadyRegistered(phonenumber);
+
+                if (!isUserNameTaken && !isPhoneNumberRegistered)
+                    compositeSubscription.add(userRegistrationService.sendRegistrationInfo(editTextEmail, editTextPassword, editTextUsername, editTextUserMobile, buttonSignUp, socket));
+                else {
+                    if (isUserNameTaken)
+                        editTextUsername.setError("Username not available");
+                    if (isPhoneNumberRegistered)
+                        editTextUserMobile.setError("This phone number has already been registered");
+                }
             }
         });
 
@@ -123,13 +122,6 @@ public class RegisterUsingEmail extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        if (firebaseUser != null) {
-            Toast.makeText(RegisterUsingEmail.this, "Account already registered", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(RegisterUsingEmail.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
     }
 
     @Override

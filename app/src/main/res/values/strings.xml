@@ -10,4 +10,5 @@
     <string name="string_profile">Profile</string>
     <string name="split_regex">+91</string>
     <string name="all_chattrs">All Chattrs</string>
+    <string name="already_registered_sign_in_here">Already Registered? Sign in here</string>
 </resources>
