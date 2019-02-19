@@ -17,10 +17,6 @@ import androidx.annotation.Nullable;
 
 public class ContactSyncService extends IntentService {
 
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     */
-
     public ContactSyncService() {
         super("ContactIntentService");
     }

@@ -14,7 +14,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import java.io.IOException;
+
 public class NetworkManager {
+
     public static boolean isUserOnline(Context context) {
         @SuppressLint("ServiceCast") ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         try {
@@ -29,5 +32,21 @@ public class NetworkManager {
             Log.i("NetworkManger", "Exception: " + exception.getMessage());
             return false;
         }
+    }
+
+    //Checks if device has internet access
+    //https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out/27312494#27312494
+    public static boolean hasInternetAccess() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

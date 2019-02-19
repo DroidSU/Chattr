@@ -41,7 +41,7 @@ public class SplashActivity extends AppCompatActivity {
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                if (NetworkManager.isUserOnline(SplashActivity.this)) {
+                if (NetworkManager.hasInternetAccess()) {
                     firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                     if (firebaseUser != null) {
                         Intent intent = new Intent(SplashActivity.this, MainActivity.class);

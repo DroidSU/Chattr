@@ -19,10 +19,13 @@ import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.activities.AllContactsActivity;
 import com.morningstar.chattr.activities.MainActivity;
+
+import java.util.Objects;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -36,12 +39,11 @@ public class DrawerUtils {
         PrimaryDrawerItem drawerItemGroups = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.mipmap.ic_group).withName(R.string.string_groups);
         PrimaryDrawerItem drawerItemAllContacts = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.mipmap.ic_contacts).withName(R.string.string_all_contacts);
 
-//        ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem().withName(Objects.requireNonNull(firebaseUser).getDisplayName()).withEmail(firebaseUser.getEmail())
-//                .withIcon(firebaseUser.getPhotoUrl());
+        ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem().withName(Objects.requireNonNull(firebaseUser).getDisplayName()).withEmail(firebaseUser.getEmail());
 
         AccountHeader accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(activity)
-//                .addProfiles(profileDrawerItem)
+                .addProfiles(profileDrawerItem)
                 .build();
 
         Drawer drawer = new DrawerBuilder()
@@ -58,12 +60,10 @@ public class DrawerUtils {
                         if (position == 2) {
                             Intent intent = new Intent(activity, MainActivity.class);
                             activity.startActivity(intent);
-                            activity.finish();
                         }
                         if (position == 4) {
                             Intent intent = new Intent(activity, AllContactsActivity.class);
                             activity.startActivity(intent);
-                            activity.finish();
                         }
 
                         return true;

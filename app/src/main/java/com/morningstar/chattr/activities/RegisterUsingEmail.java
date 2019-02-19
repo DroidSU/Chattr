@@ -13,16 +13,22 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dd.processbutton.iml.ActionProcessButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
+import com.morningstar.chattr.managers.NetworkManager;
 import com.morningstar.chattr.managers.UtilityManager;
 import com.morningstar.chattr.services.UserRegistrationService;
 
 import androidx.appcompat.app.AppCompatActivity;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -32,13 +38,20 @@ public class RegisterUsingEmail extends AppCompatActivity {
 
     private static final String TAG = "RegisterUsingEmail";
 
-    private EditText editTextEmail;
-    private EditText editTextPassword;
-    private EditText editTextUsername;
-    private EditText editTextUserMobile;
-
-    private ActionProcessButton buttonSignUp;
-    private TextView textViewSignIn;
+    @BindView(R.id.registerEmail)
+    EditText editTextEmail;
+    @BindView(R.id.registerPassword)
+    EditText editTextPassword;
+    @BindView(R.id.registerUsername)
+    EditText editTextUsername;
+    @BindView(R.id.registerMobileNumber)
+    EditText editTextUserMobile;
+    @BindView(R.id.registerConfirm)
+    ActionProcessButton buttonSignUp;
+    @BindView(R.id.signIn)
+    TextView textViewSignIn;
+    @BindView(R.id.registerUsingEmailRootLayout)
+    LinearLayout rootLayout;
 
     private CompositeSubscription compositeSubscription;
     private Socket socket;
@@ -48,22 +61,15 @@ public class RegisterUsingEmail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_using_email);
+        ButterKnife.bind(this);
 
         compositeSubscription = new CompositeSubscription();                //setting up RX subscription
-
-        editTextEmail = findViewById(R.id.registerEmail);
-        editTextPassword = findViewById(R.id.registerPassword);
-        buttonSignUp = findViewById(R.id.registerConfirm);
-        textViewSignIn = findViewById(R.id.signIn);
-        editTextUsername = findViewById(R.id.registerUsername);
-        editTextUserMobile = findViewById(R.id.registerMobileNumber);
 
         connectToServer();
         socket.on(ConstantManager.REGISTRATION_COMPLETED_EVENT, getRegistrationResponse());
 
         userRegistrationService = UserRegistrationService.newInstance();        //service to start the user registration
 
-        buttonSignUp.setMode(ActionProcessButton.Mode.ENDLESS);
         buttonSignUp.setProgress(0);
 
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
@@ -72,31 +78,30 @@ public class RegisterUsingEmail extends AppCompatActivity {
                 buttonSignUp.setProgress(99);
                 buttonSignUp.setMode(ActionProcessButton.Mode.ENDLESS);
 
-                String username = editTextUsername.getText().toString();
-                String phonenumber = editTextUserMobile.getText().toString();
+                if (NetworkManager.hasInternetAccess()) {
+                    boolean isUserNameTaken = UtilityManager.isUserNameTaken(editTextUsername.getText().toString());
+                    boolean isPhoneNumberRegistered = UtilityManager.isMobileNumberAlreadyRegistered(editTextUserMobile.getText().toString());
 
-                boolean isUserNameTaken = UtilityManager.isUserNameTaken(username);
-                boolean isPhoneNumberRegistered = UtilityManager.isMobileNumberAlreadyRegistered(phonenumber);
-
-                if (!isUserNameTaken && !isPhoneNumberRegistered)
-                    compositeSubscription.add(userRegistrationService.sendRegistrationInfo(editTextEmail, editTextPassword, editTextUsername, editTextUserMobile, buttonSignUp, socket));
-                else {
-                    if (isUserNameTaken)
-                        editTextUsername.setError("Username not available");
-                    if (isPhoneNumberRegistered)
-                        editTextUserMobile.setError("This phone number has already been registered");
+                    if (!isUserNameTaken && !isPhoneNumberRegistered)
+                        compositeSubscription.add(userRegistrationService.sendRegistrationInfo(editTextEmail, editTextPassword, editTextUsername, editTextUserMobile, buttonSignUp, socket));
+                    else {
+                        if (isUserNameTaken)
+                            editTextUsername.setError("Username not available");
+                        if (isPhoneNumberRegistered)
+                            editTextUserMobile.setError("This phone number has already been registered");
+                        buttonSignUp.setProgress(0);
+                    }
+                } else {
+                    Snackbar.make(rootLayout, "No internet connection", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
+    }
 
-        textViewSignIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RegisterUsingEmail.this, LoginUsingEmailActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+    @OnClick(R.id.signIn)
+    public void goToSignInActivity() {
+        startActivity(new Intent(RegisterUsingEmail.this, LoginUsingEmailActivity.class));
+        finish();
     }
 
     private Emitter.Listener getRegistrationResponse() {

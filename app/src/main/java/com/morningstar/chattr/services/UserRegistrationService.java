@@ -126,6 +126,8 @@ public class UserRegistrationService {
                                 RESULT_CODE = USER_ERROR_EMAIL_BAD_FORMAT;
                             if (userMobileNumber.length() != 10)
                                 RESULT_CODE = USER_ERROR_INVALID_MOBILE_NUMBER;
+
+                            button.setProgress(0);
                         }
 
                         return RESULT_CODE;
@@ -167,8 +169,6 @@ public class UserRegistrationService {
                             button.setProgress(-1);
                             Log.i(TAG, "Registration failed");
                         }
-
-                        Log.i(TAG, "Result code: " + integer);
                     }
                 });
     }
@@ -218,6 +218,7 @@ public class UserRegistrationService {
                 });
     }
 
+    //send login info to server
     public Subscription sendLoginInfo(EditText editTextUserEmail, EditText editTextPassword, Socket socket, Activity activity, ActionProcessButton button) {
         ArrayList<String> userDetails = new ArrayList<>();
         userDetails.add(editTextUserEmail.getText().toString());
@@ -231,7 +232,7 @@ public class UserRegistrationService {
                     @Override
                     public Integer call(ArrayList<String> strings) {
                         String userEmail = strings.get(0);
-                        String userPassword = strings.get(0);
+                        String userPassword = strings.get(1);
 
                         if (userEmail.isEmpty())
                             return USER_ERROR_EMPTY_EMAIL;
@@ -239,10 +240,12 @@ public class UserRegistrationService {
                             return USER_ERROR_EMPTY_PASSWORD;
                         if (userPassword.length() < 6)
                             return USER_ERROR_PASSWORD_SHORT;
-                        if (UtilityManager.isEmailVaild(userEmail))
+                        if (!UtilityManager.isEmailVaild(userEmail))
                             return USER_ERROR_EMAIL_BAD_FORMAT;
                         else {
-                            //Check if user exists.
+                            //Check if user exists
+                            Log.i(TAG, "Email: " + userEmail);
+                            Log.i(TAG, "Password: " + userPassword);
                             FirebaseAuth.getInstance().signInWithEmailAndPassword(userEmail, userPassword)
                                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                         @Override
@@ -297,29 +300,15 @@ public class UserRegistrationService {
                 });
     }
 
-    public Subscription getAuthToken(JSONObject jsonObject, Activity activity, ActionProcessButton button) {
-        Observable<JSONObject> jsonObjectObservable = Observable.just(jsonObject);
+    //get the auth token from server
+    public Subscription getAuthToken(ArrayList<String> userDetails, Activity activity, ActionProcessButton button) {
+        Observable<ArrayList<String>> jsonObjectObservable = Observable.just(userDetails);
 
         return jsonObjectObservable
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<JSONObject, ArrayList<String>>() {
+                .map(new Func1<ArrayList<String>, ArrayList<String>>() {
                     @Override
-                    public ArrayList<String> call(JSONObject jsonObject) {
-                        ArrayList<String> userDetails = new ArrayList<>();
-
-                        try {
-                            JSONObject serverData = jsonObject.getJSONObject("token");
-                            String token = (String) serverData.get("authToken");
-                            String email = (String) serverData.get("email");
-                            String displayName = (String) serverData.get("displayName");
-
-                            userDetails.add(token);
-                            userDetails.add(email);
-                            userDetails.add(displayName);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
+                    public ArrayList<String> call(ArrayList<String> strings) {
                         return userDetails;
                     }
                 })

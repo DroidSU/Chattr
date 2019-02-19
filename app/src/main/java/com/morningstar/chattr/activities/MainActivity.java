@@ -34,14 +34,19 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private Toolbar toolbar;
-    private LinearLayout rootLayout;
+
+    @BindView(R.id.mainActivityToolbar)
+    Toolbar toolbar;
+    @BindView(R.id.mainActivityRootLayout)
+    LinearLayout rootLayout;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -57,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         toolbar = findViewById(R.id.mainActivityToolbar);
         rootLayout = findViewById(R.id.mainActivityRootLayout);
@@ -66,23 +72,26 @@ public class MainActivity extends AppCompatActivity {
 
         DrawerUtils.getDrawer(this, toolbar);
 
-        sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
-        mobileNumber = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_MOBILE, null);
+        getValueFromPreference();
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-        if (mobileNumber != null) {
-            databaseReference = FirebaseDatabase.getInstance().getReference(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE)
-                    .child(mobileNumber).child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN);
-            databaseReference.setValue(true);
-        }
 
+        connectToSocket();
+    }
+
+    private void getValueFromPreference() {
+        sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
+        mobileNumber = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_MOBILE, null);
+        userName = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_USERNAME, null);
+    }
+
+    private void connectToSocket() {
         try {
             socket = IO.socket(ConstantManager.IP_LOCALHOST);
         } catch (URISyntaxException e) {
             Log.i(TAG, "Socket connection failed: " + e.getMessage());
         }
-
         socket.connect();
     }
 
@@ -150,13 +159,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE).child(mobileNumber)
-                .child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN);
-        databaseReference.setValue(false).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-            }
-        });
+//        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE).child(mobileNumber)
+//                .child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN);
+//        databaseReference.setValue(false).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void aVoid) {
+//            }
+//        });
     }
 
     @Override
