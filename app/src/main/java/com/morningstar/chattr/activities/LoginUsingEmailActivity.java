@@ -31,6 +31,7 @@ import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -45,7 +46,7 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
     EditText editTextEmail;
     @BindView(R.id.loginPassword)
     EditText editTextPassword;
-    @BindView(R.id.loginVerifyButton)
+    @BindView(R.id.loginUsingEmailVerifyButton)
     ActionProcessButton buttonVerifiy;
     @BindView(R.id.signUp)
     TextView textViewSignUp;
@@ -60,6 +61,7 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_using_email);
+        ButterKnife.bind(this);
 
         buttonVerifiy.setProgress(0);
         buttonVerifiy.setMode(ActionProcessButton.Mode.ENDLESS);

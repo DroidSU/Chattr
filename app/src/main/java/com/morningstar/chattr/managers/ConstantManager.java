@@ -10,7 +10,7 @@ package com.morningstar.chattr.managers;
 
 public class ConstantManager {
 
-    public static final String IP_LOCALHOST = "http://192.168.0.103:3000";
+    public static final String IP_LOCALHOST = "http://192.168.0.106:3000";
     public static final String SHARED_PREF_FILE_NAME = "ChattrPref";
     public static final String PREF_TITLE_USER_MOBILE = "USER_MOBILE";
     public static final String PREF_TITLE_USER_EMAIL = "USER_EMAIL";

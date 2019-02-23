@@ -21,7 +21,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.morningstar.chattr.activities.MainActivity;
 import com.morningstar.chattr.models.ContactsModel;
 import com.morningstar.chattr.pojo.Contacts;
 import com.morningstar.chattr.receivers.ContactSyncReceiver;
@@ -133,38 +132,32 @@ public class ContactsManager {
 
     private static void syncWithFirebase(ArrayList<String> arrayList, Context context) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE);
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (String mobNumber : arrayList) {
-                    if (dataSnapshot.child(mobNumber).exists()) {
-                        try (Realm realm = Realm.getDefaultInstance()) {
-                            Contacts contacts = realm.where(Contacts.class).equalTo(ConstantManager.CONTACT_NUMBER, mobNumber).findFirst();
-                            if (contacts != null) {
-                                try {
-                                    realm.executeTransaction(new Realm.Transaction() {
-                                        @Override
-                                        public void execute(Realm realm) {
-                                            contacts.setAdded(true);
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    Log.i(TAG, "Updating sync status failed");
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (String mobNumber : arrayList) {
+                                if (dataSnapshot.child(mobNumber).exists()) {
+                                    Contacts contacts = realm.where(Contacts.class).equalTo(ConstantManager.CONTACT_NUMBER, mobNumber).findFirst();
+                                    if (contacts != null) {
+                                        contacts.setAdded(true);
+                                    }
                                 }
                             }
                         }
-                    }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
-
-                Intent intent = new Intent(context, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+            });
+        } catch (Exception e) {
+            Log.i(TAG, "Contact syncing failed");
+        }
     }
 }

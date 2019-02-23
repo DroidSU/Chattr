@@ -12,16 +12,25 @@ import android.app.Application;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.morningstar.chattr.managers.ConstantManager;
 import com.squareup.picasso.Picasso;
+
+import java.net.URISyntaxException;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.socket.client.IO;
+import io.socket.client.Socket;
 
 public class CustomApplication extends Application {
+    public static final String TAG = "CustomApplication";
+
+    private Socket socket;
 
     @Override
     public void onCreate() {
@@ -48,5 +57,16 @@ public class CustomApplication extends Application {
                 return super.placeholder(ctx, tag);
             }
         });
+    }
+
+    public Socket getSocket() {
+        if (socket == null) {
+            try {
+                socket = IO.socket(ConstantManager.IP_LOCALHOST);
+            } catch (URISyntaxException e) {
+                Log.i(TAG, e.getMessage());
+            }
+        }
+        return socket;
     }
 }

@@ -132,7 +132,6 @@ public class RegisterUsingEmail extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        socket.disconnect();
         compositeSubscription.clear();
     }
 }
