@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.morningstar.chattr.activities.MainActivity;
 import com.morningstar.chattr.models.ContactsModel;
 import com.morningstar.chattr.pojo.Contacts;
 import com.morningstar.chattr.receivers.ContactSyncReceiver;
@@ -35,6 +36,7 @@ public class ContactsManager {
 
     private static final String TAG = "ContactsManager";
     private static final String PROGRESS_PERCENT = "PROGRESS_PERCENT";
+    private static int falseCases = 0;
 
     public static void syncContacts(Context context) {
         getPhoneContacts(context);
@@ -113,8 +115,6 @@ public class ContactsManager {
                         contacts.setContactName(contactsModel.getContactName());
                         contacts.setAdded(false);
                         contacts.setContactID(contactsModel.getContactID());
-
-                        Log.i(TAG, contacts.getContactName() + " added");
                     }
                 });
 
@@ -132,32 +132,35 @@ public class ContactsManager {
 
     private static void syncWithFirebase(ArrayList<String> arrayList, Context context) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE);
-        try (Realm realm = Realm.getDefaultInstance()) {
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (String mobNumber : arrayList) {
-                                if (dataSnapshot.child(mobNumber).exists()) {
-                                    Contacts contacts = realm.where(Contacts.class).equalTo(ConstantManager.CONTACT_NUMBER, mobNumber).findFirst();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (String mobNumber : arrayList) {
+                    if (dataSnapshot.child(mobNumber).exists()) {
+                        try (Realm realm = Realm.getDefaultInstance()) {
+                            Contacts contacts = realm.where(Contacts.class).equalTo(ConstantManager.CONTACT_NUMBER, mobNumber).findFirst();
+                            realm.executeTransaction(new Realm.Transaction() {
+                                @Override
+                                public void execute(Realm realm) {
                                     if (contacts != null) {
                                         contacts.setAdded(true);
+
+                                        Log.i(TAG, contacts.getContactName() + " synced");
                                     }
                                 }
-                            }
+                            });
                         }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
+                    } else
+                        falseCases += 1;
                 }
-            });
-        } catch (Exception e) {
-            Log.i(TAG, "Contact syncing failed");
-        }
+                Log.i(TAG, "Total false cases: " + falseCases);
+                context.startActivity(new Intent(context, MainActivity.class));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

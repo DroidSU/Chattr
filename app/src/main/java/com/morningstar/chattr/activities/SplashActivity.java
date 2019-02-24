@@ -9,12 +9,14 @@
 package com.morningstar.chattr.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.morningstar.chattr.R;
+import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.NetworkManager;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +26,9 @@ public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
+    private SharedPreferences sharedPreferences;
+
+    private String displayName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +48,9 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 if (NetworkManager.hasInternetAccess()) {
                     firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                    if (firebaseUser != null) {
+                    sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
+                    displayName = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_USERNAME, "");
+                    if (displayName != null && !displayName.isEmpty()) {
                         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();

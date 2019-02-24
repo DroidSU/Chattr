@@ -20,7 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.morningstar.chattr.activities.MainActivity;
+import com.morningstar.chattr.activities.LoadingActivity;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.UtilityManager;
 
@@ -208,7 +208,7 @@ public class UserRegistrationService {
                             editor.putString(ConstantManager.PREF_TITLE_USER_MOBILE, mobileNumber);
                             editor.apply();
 
-                            activity.startActivity(new Intent(activity, MainActivity.class));
+                            activity.startActivity(new Intent(activity, LoadingActivity.class));
                             activity.finish();
                         } else {
                             actionProcessButton.setProgress(-1);
@@ -346,7 +346,7 @@ public class UserRegistrationService {
                                                 editor.putString(ConstantManager.PREF_TITLE_USER_USERNAME, displayname);
                                                 editor.apply();
 
-                                                activity.startActivity(new Intent(activity, MainActivity.class));
+                                                activity.startActivity(new Intent(activity, LoadingActivity.class));
                                                 activity.finish();
                                             }
                                         }

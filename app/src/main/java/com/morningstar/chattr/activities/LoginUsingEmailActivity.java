@@ -133,4 +133,10 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        socket.disconnect();
+    }
 }
