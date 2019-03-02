@@ -112,6 +112,9 @@ public class UserRegistrationService {
                             } catch (JSONException e) {
                                 Log.i(TAG, "JSON Exception: " + e.getMessage());
                                 RESULT_CODE = REGISTRATION_FAILURE;
+                            } catch (Exception e) {
+                                Log.i(TAG, "Exception: " + e.getMessage());
+                                RESULT_CODE = REGISTRATION_FAILURE;
                             }
                         } else {
                             if (userEmail.isEmpty())
@@ -199,6 +202,7 @@ public class UserRegistrationService {
                     @Override
                     public void onNext(String response) {
                         if (response.equalsIgnoreCase(ConstantManager.REGISTRATION_SUCCESS_MESSAGE)) {
+                            Log.i(TAG, "Response received: " + response);
                             actionProcessButton.setProgress(100);
 
                             SharedPreferences sharedPreferences = activity.getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
@@ -212,7 +216,7 @@ public class UserRegistrationService {
                             activity.finish();
                         } else {
                             actionProcessButton.setProgress(-1);
-                            Toast.makeText(activity, response, Toast.LENGTH_SHORT).show();
+                            Log.i(TAG, "No response received: " + response);
                         }
                     }
                 });
