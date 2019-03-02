@@ -40,7 +40,7 @@
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:layout_centerInParent="true"
-                    android:src="@mipmap/ic_default_user" />
+                    android:src="@drawable/ic_default_user_black_24dp" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/accountUploadImage"
@@ -50,7 +50,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_marginEnd="133dp"
                     android:layout_marginBottom="0dp"
-                    android:src="@mipmap/ic_camera" />
+                    android:src="@drawable/ic_camera_black_24dp" />
             </RelativeLayout>
         </LinearLayout>
 

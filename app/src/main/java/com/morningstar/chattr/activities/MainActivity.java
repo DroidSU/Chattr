@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        connectToSocket();
+//        connectToSocket();
     }
 
     private void getValueFromPreference() {
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_logout:
-                logOutUser();
+//                logOutUser();
                 break;
         }
         return true;

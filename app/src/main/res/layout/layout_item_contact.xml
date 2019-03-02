@@ -16,7 +16,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="10dp"
-        android:src="@mipmap/ic_default_user" />
+        android:src="@drawable/ic_default_user_black_24dp" />
 
     <TextView
         android:id="@+id/textViewProfileName"

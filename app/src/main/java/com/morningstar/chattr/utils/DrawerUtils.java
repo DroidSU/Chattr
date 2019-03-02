@@ -35,10 +35,10 @@ public class DrawerUtils {
         String email = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_EMAIL, "");
         String displayName = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_USERNAME, "");
 
-        PrimaryDrawerItem drawerItemProfile = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.mipmap.ic_default_user).withName(R.string.string_profile);
+        PrimaryDrawerItem drawerItemProfile = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.drawable.ic_default_user_black_24dp).withName(R.string.string_profile);
         PrimaryDrawerItem drawerItemRecentChats = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.drawable.ic_chat).withName(R.string.string_recent_chats);
-        PrimaryDrawerItem drawerItemGroups = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.mipmap.ic_group).withName(R.string.string_groups);
-        PrimaryDrawerItem drawerItemAllContacts = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.mipmap.ic_contacts).withName(R.string.string_all_contacts);
+        PrimaryDrawerItem drawerItemGroups = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.drawable.ic_group_black_24dp).withName(R.string.string_groups);
+        PrimaryDrawerItem drawerItemAllContacts = new PrimaryDrawerItem().withIdentifier(0).withIcon(R.drawable.ic_contacts_black_24dp).withName(R.string.string_all_contacts);
 
         ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem().withName(displayName).withEmail(email);
 

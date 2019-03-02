@@ -11,7 +11,7 @@
 
     <item
         android:id="@+id/all_contact_refresh"
-        android:icon="@mipmap/ic_refresh"
+        android:icon="@drawable/ic_refresh_black_24dp"
         android:title=""
         app:showAsAction="never" />
 </menu>
