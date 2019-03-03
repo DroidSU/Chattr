@@ -108,15 +108,16 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
         return new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                Log.i(TAG, args[0].toString());
                 JSONObject jsonObject = (JSONObject) args[0];
                 String token = null;
                 String email = null;
                 String displayName = null;
+                String mobNumber = null;
                 try {
                     token = jsonObject.getString("authToken");
                     displayName = jsonObject.getString("displayName");
                     email = jsonObject.getString("email");
+                    mobNumber = jsonObject.getString("mobNumber");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -124,6 +125,7 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
                 userDetails.add(token);
                 userDetails.add(email);
                 userDetails.add(displayName);
+                userDetails.add(mobNumber);
                 compositeSubscription.add(userRegistrationService.getAuthToken(userDetails, LoginUsingEmailActivity.this, buttonVerifiy));
             }
         };
@@ -137,6 +139,7 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        socket.disconnect();
+        if (socket != null)
+            socket.disconnect();
     }
 }

@@ -29,7 +29,7 @@
         <activity android:name=".activities.LoginUsingEmailActivity" />
         <activity android:name=".activities.NoNetworkActivity" />
         <activity android:name=".activities.RegisterUsingEmail" />
-        <activity android:name=".activities.AccountDetailsActivity" />
+        <!--<activity android:name=".activities.AccountDetailsActivity" />-->
 
         <service
             android:name=".services.ContactSyncService"

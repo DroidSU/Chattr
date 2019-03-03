@@ -90,6 +90,8 @@ public class UserRegistrationService {
                         String userUsername = strings.get(2);
                         String userMobileNumber = strings.get(3);
 
+                        Log.i(TAG, "Send registration info: " + userMobileNumber);
+
                         int RESULT_CODE = -1;
 
                         if (!userEmail.isEmpty() && !userPassword.isEmpty() && userPassword.length() >= 6
@@ -247,15 +249,13 @@ public class UserRegistrationService {
                         if (!UtilityManager.isEmailVaild(userEmail))
                             return USER_ERROR_EMAIL_BAD_FORMAT;
                         else {
-                            //Check if user exists
-                            Log.i(TAG, "Email: " + userEmail);
-                            Log.i(TAG, "Password: " + userPassword);
                             FirebaseAuth.getInstance().signInWithEmailAndPassword(userEmail, userPassword)
                                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                         @Override
                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                             if (!task.isSuccessful()) {
                                                 Toast.makeText(activity, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                                                Log.i(TAG, "Sign in with email and password failed");
                                             } else {
                                                 JSONObject sendData = new JSONObject();
                                                 try {
@@ -333,6 +333,9 @@ public class UserRegistrationService {
                         String token = strings.get(0);
                         String email = strings.get(1);
                         String displayname = strings.get(2);
+                        String mobNumber = strings.get(3);
+
+                        Log.i(TAG, email + " " + displayname + " " + mobNumber);
 
                         if (!email.equalsIgnoreCase("error")) {
                             FirebaseAuth.getInstance().signInWithCustomToken(token)
@@ -341,6 +344,7 @@ public class UserRegistrationService {
                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                             if (!task.isSuccessful()) {
                                                 Toast.makeText(activity, "Could not sign in", Toast.LENGTH_SHORT).show();
+                                                Log.i(TAG, "Task unsuccessful: " + task.getException());
                                                 button.setProgress(-1);
                                             } else {
                                                 button.setProgress(100);
@@ -348,6 +352,7 @@ public class UserRegistrationService {
                                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                                 editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, email);
                                                 editor.putString(ConstantManager.PREF_TITLE_USER_USERNAME, displayname);
+                                                editor.putString(ConstantManager.PREF_TITLE_USER_MOBILE, mobNumber);
                                                 editor.apply();
 
                                                 activity.startActivity(new Intent(activity, LoadingActivity.class));
@@ -355,6 +360,8 @@ public class UserRegistrationService {
                                             }
                                         }
                                     });
+                        } else {
+                            Log.i(TAG, "Error received");
                         }
                     }
                 });

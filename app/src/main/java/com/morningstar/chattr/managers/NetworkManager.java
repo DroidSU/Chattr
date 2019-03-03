@@ -8,31 +8,25 @@
 
 package com.morningstar.chattr.managers;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-
 import java.io.IOException;
 
 public class NetworkManager {
 
-    public static boolean isUserOnline(Context context) {
-        @SuppressLint("ServiceCast") ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        try {
-            NetworkInfo networkInfo = null;
-            if (connectivityManager != null) {
-                networkInfo = connectivityManager.getActiveNetworkInfo();
-            } else {
-                Log.i("NetworkManger", "Connectivity Manager is null");
-            }
-            return networkInfo != null && networkInfo.isConnectedOrConnecting();
-        } catch (NullPointerException exception) {
-            Log.i("NetworkManger", "Exception: " + exception.getMessage());
-            return false;
-        }
-    }
+//    public static boolean isUserOnline(Context context) {
+//        @SuppressLint("ServiceCast") ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//        try {
+//            NetworkInfo networkInfo = null;
+//            if (connectivityManager != null) {
+//                networkInfo = connectivityManager.getActiveNetworkInfo();
+//            } else {
+//                Log.i("NetworkManger", "Connectivity Manager is null");
+//            }
+//            return networkInfo != null && networkInfo.isConnectedOrConnecting();
+//        } catch (NullPointerException exception) {
+//            Log.i("NetworkManger", "Exception: " + exception.getMessage());
+//            return false;
+//        }
+//    }
 
     //Checks if device has internet access
     //https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out/27312494#27312494

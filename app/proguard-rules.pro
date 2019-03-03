@@ -20,4 +20,23 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+#Proguard rule for okhttp3
+-dontwarn okhttp3.internal.platform.*
+
+#Proguard rule for firebase model classes
 -keep class com.google.firebase.example.fireeats.java.model.** { *; }
+
+#RxJava
+#------------Begin pro-guard rule for rxjava-----
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+    long producerIndex;
+    long consumerIndex;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode producerNode;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode consumerNode;
+}
+-dontwarn sun.misc.Unsafe
+#------------End pro-guard rule for rxjava-----
