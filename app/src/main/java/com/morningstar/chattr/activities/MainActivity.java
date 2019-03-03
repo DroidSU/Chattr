@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (firebaseUser == null) {
+        if (userName == null || userName.isEmpty() || mobileNumber == null || mobileNumber.isEmpty() || mobileNumber.length() != 10) {
             Intent intent = new Intent(MainActivity.this, RegisterUsingEmail.class);
             startActivity(intent);
             finish();

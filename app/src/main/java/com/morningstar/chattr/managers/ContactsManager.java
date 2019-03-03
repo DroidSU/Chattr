@@ -154,7 +154,9 @@ public class ContactsManager {
                         falseCases += 1;
                 }
                 Log.i(TAG, "Total false cases: " + falseCases);
-                context.startActivity(new Intent(context, MainActivity.class));
+                context.startActivity(new Intent(context, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
 
             @Override
