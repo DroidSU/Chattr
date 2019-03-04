@@ -139,19 +139,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE).child(mobileNumber)
-//                .child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN);
-//        databaseReference.setValue(false).addOnSuccessListener(new OnSuccessListener<Void>() {
-//            @Override
-//            public void onSuccess(Void aVoid) {
-//            }
-//        });
+        NetworkManager.changeLoggedInStatus(this, ConstantManager.OFF);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        NetworkManager.changeLoggedInStatus(this, ConstantManager.OFF);
         NetworkManager.disconnectFromSocket();
     }
 }

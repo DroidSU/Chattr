@@ -53,4 +53,5 @@ public class ConstantManager {
     public static final String UNSUCCESSFUL = "failed";
     public static final String OFF = "offline";
     public static final String ON = "online";
+    public static final String BUNDLE_EXTRAS = "bundle_extra";
 }

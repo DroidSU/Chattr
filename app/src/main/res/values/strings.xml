@@ -11,4 +11,6 @@
     <string name="split_regex">+91</string>
     <string name="all_chattrs">All Chattrs</string>
     <string name="already_registered_sign_in_here">Already Registered? Sign in here</string>
+    <string name="go_back">Go back</string>
+    <string name="send_a_message">Send a message</string>
 </resources>

@@ -8,15 +8,20 @@
 
 package com.morningstar.chattr.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.morningstar.chattr.R;
+import com.morningstar.chattr.activities.ChatActivity;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.pojo.Contacts;
 
@@ -50,6 +55,17 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
     @Override
     public void onBindViewHolder(@NonNull ContactsRecyclerViewHolder holder, int position) {
         holder.textViewProfileName.setText(contactsArrayList.get(position).getContactName());
+
+        holder.linearLayoutRootLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString(ConstantManager.CONTACT_NAME, contactsArrayList.get(position).getContactName());
+                bundle.putString(ConstantManager.CONTACT_NUMBER, contactsArrayList.get(position).getContactNumber());
+                context.startActivity(new Intent(context, ChatActivity.class).putExtra(ConstantManager.BUNDLE_EXTRAS, bundle));
+                ((Activity) context).finish();
+            }
+        });
     }
 
     @Override
@@ -61,12 +77,14 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
         CircleImageView circleImageView;
         TextView textViewProfileName;
         TextView textViewOnlineStatus;
+        LinearLayout linearLayoutRootLayout;
 
         ContactsRecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             circleImageView = itemView.findViewById(R.id.circleImageViewProfileImage);
             textViewProfileName = itemView.findViewById(R.id.textViewProfileName);
             textViewOnlineStatus = itemView.findViewById(R.id.textViewOnlineStatus);
+            linearLayoutRootLayout = itemView.findViewById(R.id.contact_item_root_layout);
         }
     }
 }
