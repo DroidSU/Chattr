@@ -12,7 +12,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
@@ -50,7 +49,7 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
 
     @Override
     public void onBindViewHolder(@NonNull ContactsRecyclerViewHolder holder, int position) {
-        holder.textView.setText(contactsArrayList.get(position).getContactName());
+        holder.textViewProfileName.setText(contactsArrayList.get(position).getContactName());
     }
 
     @Override
@@ -60,14 +59,14 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
 
     class ContactsRecyclerViewHolder extends RecyclerView.ViewHolder {
         CircleImageView circleImageView;
-        TextView textView;
-        RadioButton radioButton;
+        TextView textViewProfileName;
+        TextView textViewOnlineStatus;
 
         ContactsRecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             circleImageView = itemView.findViewById(R.id.circleImageViewProfileImage);
-            textView = itemView.findViewById(R.id.textViewProfileName);
-            radioButton = itemView.findViewById(R.id.radioOnlineStatus);
+            textViewProfileName = itemView.findViewById(R.id.textViewProfileName);
+            textViewOnlineStatus = itemView.findViewById(R.id.textViewOnlineStatus);
         }
     }
 }

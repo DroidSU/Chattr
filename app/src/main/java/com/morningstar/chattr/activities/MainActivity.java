@@ -11,32 +11,21 @@ package com.morningstar.chattr.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
+import com.morningstar.chattr.managers.NetworkManager;
 import com.morningstar.chattr.utils.DrawerUtils;
 
-import java.net.URISyntaxException;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.socket.client.IO;
 import io.socket.client.Socket;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,15 +37,11 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.mainActivityRootLayout)
     LinearLayout rootLayout;
 
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
-    private DatabaseReference databaseReference;
-    private SharedPreferences sharedPreferences;
-
     private String mobileNumber = "";
     private String userName = "";
 
     private Socket socket;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
         getValueFromPreference();
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-
-//        connectToSocket();
+        NetworkManager.isConnectToSocket();
+        NetworkManager.changeLoggedInStatus(this, ConstantManager.ON);
     }
 
     private void getValueFromPreference() {
@@ -86,20 +69,17 @@ public class MainActivity extends AppCompatActivity {
         userName = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_USERNAME, null);
     }
 
-    private void connectToSocket() {
-        try {
-            socket = IO.socket(ConstantManager.IP_LOCALHOST);
-        } catch (URISyntaxException e) {
-            Log.i(TAG, "Socket connection failed: " + e.getMessage());
-        }
-        socket.connect();
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
         if (userName == null || userName.isEmpty() || mobileNumber == null || mobileNumber.isEmpty() || mobileNumber.length() != 10) {
             Intent intent = new Intent(MainActivity.this, RegisterUsingEmail.class);
+            startActivity(intent);
+            finish();
+        }
+
+        if (!NetworkManager.hasInternetAccess()) {
+            Intent intent = new Intent(MainActivity.this, NoNetworkActivity.class);
             startActivity(intent);
             finish();
         }
@@ -122,39 +102,39 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void logOutUser() {
-        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE)
-                .child(mobileNumber);
-        databaseReference.child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN)
-                .setValue(false).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                databaseReference.child(ConstantManager.FIREBASE_IS_LOGGED_IN_COLUMN).setValue(false)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                firebaseAuth.signOut();
-                                Intent intent = new Intent(MainActivity.this, LoginUsingEmailActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Snackbar snackbar = Snackbar.make(rootLayout, "Could not sign out at the moment", Snackbar.LENGTH_SHORT);
-                        snackbar.setAction("TRY AGAIN", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                logOutUser();
-                            }
-                        });
-                        snackbar.show();
-                    }
-                });
-    }
+//    private void logOutUser() {
+//        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE)
+//                .child(mobileNumber);
+//        databaseReference.child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN)
+//                .setValue(false).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void aVoid) {
+//                databaseReference.child(ConstantManager.FIREBASE_IS_LOGGED_IN_COLUMN).setValue(false)
+//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void aVoid) {
+//                                firebaseAuth.signOut();
+//                                Intent intent = new Intent(MainActivity.this, LoginUsingEmailActivity.class);
+//                                startActivity(intent);
+//                                finish();
+//                            }
+//                        });
+//            }
+//        })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Snackbar snackbar = Snackbar.make(rootLayout, "Could not sign out at the moment", Snackbar.LENGTH_SHORT);
+//                        snackbar.setAction("TRY AGAIN", new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                logOutUser();
+//                            }
+//                        });
+//                        snackbar.show();
+//                    }
+//                });
+//    }
 
     @Override
     public void onBackPressed() {
@@ -171,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (socket != null)
-            socket.disconnect();
+        NetworkManager.changeLoggedInStatus(this, ConstantManager.OFF);
+        NetworkManager.disconnectFromSocket();
     }
 }

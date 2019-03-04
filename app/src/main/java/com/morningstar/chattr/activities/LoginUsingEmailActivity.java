@@ -8,6 +8,7 @@
 
 package com.morningstar.chattr.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,6 +58,7 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
     private CompositeSubscription compositeSubscription;
     private Socket socket;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +75,6 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
 
         compositeSubscription = new CompositeSubscription();
 
-
         buttonVerifiy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,6 +86,34 @@ public class LoginUsingEmailActivity extends AppCompatActivity {
                     Snackbar.make(rootLayout, "No internet connection", Snackbar.LENGTH_SHORT).show();
             }
         });
+
+//        editTextPassword.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                final int DRAWABLE_LEFT = 0;
+//                final int DRAWABLE_TOP = 1;
+//                final int DRAWABLE_RIGHT = 2;
+//                final int DRAWABLE_BOTTOM = 3;
+//
+//                if(event.getAction() == MotionEvent.ACTION_UP) {
+//                    if(event.getRawX() >= (editTextPassword.getRight() - editTextPassword.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+//                        // your action here
+//                        int input_type = editTextPassword.getInputType();
+//
+//                        if (input_type == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
+//                            editTextPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+//                            editTextPassword.setSelection(editTextPassword.getText().length());
+//                        }
+//                        else
+//                            editTextPassword.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+//                        editTextPassword.setSelection(editTextPassword.getText().length());
+//
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            }
+//        });
     }
 
     @OnClick(R.id.signUp)

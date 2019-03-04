@@ -8,9 +8,22 @@
 
 package com.morningstar.chattr.managers;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.net.URISyntaxException;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
 
 public class NetworkManager {
+    private static final String TAG = "NetworkManager";
+    private static Socket socket;
 
 //    public static boolean isUserOnline(Context context) {
 //        @SuppressLint("ServiceCast") ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -42,5 +55,45 @@ public class NetworkManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static boolean isConnectToSocket() {
+        try {
+            socket = IO.socket(ConstantManager.IP_LOCALHOST);
+            socket.connect();
+            return true;
+        } catch (Exception e) {
+            Log.i(TAG, "Connection failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static void disconnectFromSocket() {
+        if (socket != null) {
+            socket.disconnect();
+            socket = null;
+        }
+    }
+
+    public static void changeLoggedInStatus(Context context, String status) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_USERNAME, "");
+        JSONObject data = new JSONObject();
+        try {
+            data.put("displayName", username);
+            if (socket == null) {
+                socket = IO.socket(ConstantManager.IP_LOCALHOST);
+                socket.connect();
+            }
+            if (status.equalsIgnoreCase(ConstantManager.OFF))
+                socket.emit("statusOffline", data);
+            else
+                socket.emit("statusOnline", data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 }

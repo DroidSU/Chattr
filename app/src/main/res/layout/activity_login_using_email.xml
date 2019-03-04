@@ -78,6 +78,7 @@
                 android:hint="password"
                 android:textSize="18sp"
                 android:inputType="textPassword"
+                android:drawableEnd="@drawable/ic_eye_white_24dp"
                 android:textColor="@color/md_white_1000" />
 
             <com.dd.processbutton.iml.ActionProcessButton
