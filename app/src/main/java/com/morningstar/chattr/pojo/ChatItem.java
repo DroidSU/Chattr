@@ -19,6 +19,8 @@ public class ChatItem extends RealmObject {
     public static String IS_GROUP = "isGroup";
     public static String SENDER_NUMBER = "senderNumber";
     public static String RECEIVER_NUMBER = "receiverNumber";
+    public static String SENDER_USERNAME = "senderUsername";
+    public static String RECEIVER_USERNAME = "receiverUsername";
     public static String DATE = "date";
 
     @PrimaryKey
@@ -30,6 +32,24 @@ public class ChatItem extends RealmObject {
     private boolean isGroup;
     private RealmList<String> groupParticipants;
     private String date;
+    private String senderUsername;
+    private String receiverUsername;
+
+    public String getSenderUsername() {
+        return senderUsername;
+    }
+
+    public void setSenderUsername(String senderUsername) {
+        this.senderUsername = senderUsername;
+    }
+
+    public String getReceiverUsername() {
+        return receiverUsername;
+    }
+
+    public void setReceiverUsername(String receiverUsername) {
+        this.receiverUsername = receiverUsername;
+    }
 
     public long getId() {
         return id;
@@ -77,5 +97,13 @@ public class ChatItem extends RealmObject {
 
     public void setGroupParticipants(RealmList<String> groupParticipants) {
         this.groupParticipants = groupParticipants;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

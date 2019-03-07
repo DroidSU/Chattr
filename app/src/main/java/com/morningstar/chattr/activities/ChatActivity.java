@@ -11,15 +11,26 @@ package com.morningstar.chattr.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.morningstar.chattr.R;
+import com.morningstar.chattr.events.FriendDetailsFetchedEvent;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.NetworkManager;
 import com.morningstar.chattr.pojo.ChatItem;
+import com.morningstar.chattr.pojo.Friend;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,8 +41,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 public class ChatActivity extends AppCompatActivity {
+
+    public static final String TAG = "ChatActivity";
 
     @BindView(R.id.toolbar_user_dp)
     CircleImageView circleImageViewUserImage;
@@ -51,13 +66,15 @@ public class ChatActivity extends AppCompatActivity {
     TextView textViewNoMessages;
 
     private boolean isConnectedToSocket;
-    private String user_Name;
+    private String friend_user_name;
     private String my_user_Name;
-    private String user_number;
+    private String friend_user_number;
     private String my_number;
+    private Socket socket;
 
     private RealmResults<ChatItem> chatItemRealmResults;
-    private Realm realm;
+    private Realm mRealm;
+    private Friend friend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +83,54 @@ public class ChatActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         isConnectedToSocket = NetworkManager.isConnectToSocket();
-        realm = Realm.getDefaultInstance();
+        mRealm = Realm.getDefaultInstance();
+        EventBus.getDefault().register(this);
 
         getIntentExtras();
         getValueFromPrefs();
         updateUi();
+        socket = NetworkManager.getConnectedSocket();
+        getFriendObjectFromRealm();
 
-        textViewUserName.setText(user_Name);
+        if (friend == null) {
+            //creating friend object
+            NetworkManager.sendNumberForFriendDetails(friend_user_number);
+            socket.on(ConstantManager.FRIEND_CREATED, getFriendDetailsResponse());
+        } else {
+            Log.i(TAG, "Friend object exists");
+        }
+
+        textViewUserName.setText(friend_user_name);
+    }
+
+    @OnClick(R.id.imageView_send_message)
+    public void sendChatMessage() {
+        if (TextUtils.isEmpty(editTextMessageArea.getText().toString())) {
+            Toast.makeText(this, "Empty message cannot be sent", Toast.LENGTH_SHORT).show();
+        } else {
+            
+        }
+    }
+
+    private void getFriendObjectFromRealm() {
+        friend = mRealm.where(Friend.class).equalTo(Friend.FRIEND_MOB_NUMBER, friend_user_number).findFirst();
+    }
+
+    private Emitter.Listener getFriendDetailsResponse() {
+        return new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JSONObject jsonObject = (JSONObject) args[0];
+                try {
+                    friend_user_number = jsonObject.getString("friendMobNumber");
+                    friend_user_name = jsonObject.getString("friendUsername");
+
+                    EventBus.getDefault().post(new FriendDetailsFetchedEvent());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
     }
 
     private void getValueFromPrefs() {
@@ -82,16 +140,16 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void updateUi() {
-        chatItemRealmResults = realm.where(ChatItem.class)
+        chatItemRealmResults = mRealm.where(ChatItem.class)
                 .beginGroup()
                 .beginGroup()
-                .equalTo(ChatItem.SENDER_NUMBER, user_number)
+                .equalTo(ChatItem.SENDER_NUMBER, friend_user_number)
                 .and()
                 .equalTo(ChatItem.RECEIVER_NUMBER, my_number)
                 .endGroup()
                 .or()
                 .beginGroup()
-                .equalTo(ChatItem.RECEIVER_NUMBER, user_number)
+                .equalTo(ChatItem.RECEIVER_NUMBER, friend_user_number)
                 .and()
                 .equalTo(ChatItem.SENDER_NUMBER, my_number)
                 .endGroup()
@@ -111,8 +169,19 @@ public class ChatActivity extends AppCompatActivity {
     private void getIntentExtras() {
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra(ConstantManager.BUNDLE_EXTRAS);
-        user_Name = bundle.getString(ConstantManager.CONTACT_NAME);
-        user_number = bundle.getString(ConstantManager.CONTACT_NUMBER);
+        friend_user_name = bundle.getString(ConstantManager.CONTACT_NAME);
+        friend_user_number = bundle.getString(ConstantManager.CONTACT_NUMBER);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void createFriendObject(FriendDetailsFetchedEvent friendDetailsFetchedEvent) {
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                friend = mRealm.createObject(Friend.class, friend_user_number);
+                friend.setFriendUsername(friend_user_name);
+            }
+        });
     }
 
     @OnClick(R.id.imageView_go_back)
@@ -127,8 +196,9 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (realm != null && !realm.isClosed())
-            realm.close();
+        if (mRealm != null && !mRealm.isClosed())
+            mRealm.close();
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 }

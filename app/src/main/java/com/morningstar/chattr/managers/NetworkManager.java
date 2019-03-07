@@ -58,20 +58,55 @@ public class NetworkManager {
     }
 
     public static boolean isConnectToSocket() {
-        try {
-            socket = IO.socket(ConstantManager.IP_LOCALHOST);
-            socket.connect();
+        if (socket == null) {
+            try {
+                socket = IO.socket(ConstantManager.IP_LOCALHOST);
+                socket.connect();
+                return true;
+            } catch (Exception e) {
+                Log.i(TAG, "Connection failed: " + e.getMessage());
+                return false;
+            }
+        } else
             return true;
-        } catch (Exception e) {
-            Log.i(TAG, "Connection failed: " + e.getMessage());
-            return false;
-        }
+    }
+
+    public static Socket getConnectedSocket() {
+        if (socket == null) {
+            try {
+                socket = IO.socket(ConstantManager.IP_LOCALHOST);
+                socket.connect();
+                return socket;
+            } catch (Exception e) {
+                Log.i(TAG, "Connection failed: " + e.getMessage());
+                return socket;
+            }
+        } else
+            return socket;
     }
 
     public static void disconnectFromSocket() {
         if (socket != null) {
             socket.disconnect();
             socket = null;
+        }
+    }
+
+    public static void sendNumberForFriendDetails(String mobNumber) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("friendNumber", mobNumber);
+            if (socket == null) {
+                try {
+                    socket = IO.socket(ConstantManager.IP_LOCALHOST);
+                    socket.connect();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+            socket.emit("sendFriendDetails", jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 

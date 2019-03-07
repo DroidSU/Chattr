@@ -49,6 +49,8 @@ public class ConstantManager {
     //SOCKET EVENT NAMES
     public static final String REGISTRATION_COMPLETED_EVENT = "REGISTRATION_COMPLETE";
     public static final String FIREBASE_AUTH_TOKEN_GENERATED = "FIREBASE_AUTH_TOKEN_GENERATED";
+    public static final String FRIEND_CREATED = "FRIEND_CREATED";
+
     public static final String SUCCESSFUL = "success";
     public static final String UNSUCCESSFUL = "failed";
     public static final String OFF = "offline";
