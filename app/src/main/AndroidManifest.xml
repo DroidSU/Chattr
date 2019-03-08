@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.ChatActivity"></activity>
+        <activity android:name=".activities.ProfileActivity"></activity>
+        <activity android:name=".activities.ChatActivity" />
         <activity android:name=".activities.AllContactsActivity" />
         <activity android:name=".activities.LoadingActivity" />
         <activity android:name=".activities.MainActivity" />

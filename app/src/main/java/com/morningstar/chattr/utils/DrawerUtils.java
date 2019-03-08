@@ -24,6 +24,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.activities.AllContactsActivity;
 import com.morningstar.chattr.activities.MainActivity;
+import com.morningstar.chattr.activities.ProfileActivity;
 import com.morningstar.chattr.managers.ConstantManager;
 
 import androidx.appcompat.widget.Toolbar;
@@ -58,6 +59,10 @@ public class DrawerUtils {
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        if (position==1){
+                            Intent intent = new Intent(activity, ProfileActivity.class);
+                            activity.startActivity(intent);
+                        }
                         if (position == 2) {
                             Intent intent = new Intent(activity, MainActivity.class);
                             activity.startActivity(intent);
