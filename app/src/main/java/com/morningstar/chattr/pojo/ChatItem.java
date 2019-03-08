@@ -22,7 +22,7 @@ public class ChatItem extends RealmObject {
     public static String CHATTR_BOX_ID = "chattrBoxId";
 
     @PrimaryKey
-    private long id;
+    private String id;
 
     private String chatBody;
     private boolean isGroup;
@@ -37,11 +37,11 @@ public class ChatItem extends RealmObject {
         this.chattrBoxId = chattrBoxId;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

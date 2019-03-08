@@ -8,25 +8,12 @@
 
 package com.morningstar.chattr.managers;
 
-import android.util.Log;
-
-import com.morningstar.chattr.pojo.ChatItem;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
-
 public class PrimaryKeyManager {
 
     private static final String TAG = "PrimaryKeyManager";
 
-    public static long getPrimaryKeyForChatItem() {
-        try (Realm realm = Realm.getDefaultInstance()) {
-            RealmResults<ChatItem> realmResults = realm.where(ChatItem.class).findAll();
-            return DateTimeManager.getCurrentSystemDate() * 1000 + realmResults.size();
-        } catch (Exception e) {
-            Log.i(TAG, e.getMessage());
-            return 0;
-        }
+    public static String getPrimaryKeyForChatItem(String sender_username) {
+        return DateTimeManager.getCurrentSystemDate() + sender_username;
     }
 
     public static String getObjectKeyForChattrBox(String sender_username, String receiver_username) {

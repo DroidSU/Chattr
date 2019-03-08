@@ -30,10 +30,10 @@ public class ChatManager {
     private String sender_username;
     private String receiver_username;
     private String chatBody;
-    private long chatId;
+    private String chatId;
     private ChattrBox chattrBox;
     private ChatItem chatItem;
-    private RealmList<Long> chatIdRealmList;
+    private RealmList<String> chatIdRealmList;
 
     private void getConnection() {
         socket = NetworkManager.getConnectedSocket();
@@ -64,9 +64,13 @@ public class ChatManager {
     }
 
     public ChatItem createChatItemInChattrBox(String chattrBoxId, String chatBody, String date, boolean isGroup) {
-        chatIdRealmList = new RealmList<>();
-        chatId = PrimaryKeyManager.getPrimaryKeyForChatItem();
         try (Realm realm = Realm.getDefaultInstance()) {
+            ChattrBox chattrBox = realm.where(ChattrBox.class).equalTo(ChattrBox.CHATTRBOX_ID, chattrBoxId).findFirst();
+            chatIdRealmList = new RealmList<>();
+            if (chattrBox != null) {
+                chatId = PrimaryKeyManager.getPrimaryKeyForChatItem(chattrBox.getSender_username());
+            }
+
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -78,7 +82,6 @@ public class ChatManager {
                 }
             });
 
-            ChattrBox chattrBox = realm.where(ChattrBox.class).equalTo(ChattrBox.CHATTRBOX_ID, chattrBoxId).findFirst();
             if (chattrBox != null) {
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
@@ -94,7 +97,7 @@ public class ChatManager {
         return chatItem;
     }
 
-    public void sendIndividualMessage(String chattrBoxId, long chatId, String chatBody, String sender_username, String receiver_username, String date) {
+    public void sendIndividualMessage(String chattrBoxId, String chatId, String chatBody, String sender_username, String receiver_username, String date) {
         getConnection();
         JSONObject chatObject = new JSONObject();
         try {

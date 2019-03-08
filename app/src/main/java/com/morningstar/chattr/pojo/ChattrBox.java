@@ -23,7 +23,7 @@ public class ChattrBox extends RealmObject {
     private String chattrBoxId;
     private String sender_username;
     private String receiver_username;
-    private RealmList<Long> chatIds;
+    private RealmList<String> chatIds;
 
     public String getChattrBoxId() {
         return chattrBoxId;
@@ -49,11 +49,11 @@ public class ChattrBox extends RealmObject {
         this.receiver_username = receiver_username;
     }
 
-    public RealmList<Long> getChatIds() {
+    public RealmList<String> getChatIds() {
         return chatIds;
     }
 
-    public void setChatIds(RealmList<Long> chatIds) {
+    public void setChatIds(RealmList<String> chatIds) {
         this.chatIds = chatIds;
     }
 }
