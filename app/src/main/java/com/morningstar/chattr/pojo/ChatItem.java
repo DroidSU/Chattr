@@ -8,7 +8,6 @@
 
 package com.morningstar.chattr.pojo;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -19,36 +18,23 @@ public class ChatItem extends RealmObject {
     public static String IS_GROUP = "isGroup";
     public static String SENDER_NUMBER = "senderNumber";
     public static String RECEIVER_NUMBER = "receiverNumber";
-    public static String SENDER_USERNAME = "senderUsername";
-    public static String RECEIVER_USERNAME = "receiverUsername";
     public static String DATE = "date";
+    public static String CHATTR_BOX_ID = "chattrBoxId";
 
     @PrimaryKey
     private long id;
 
     private String chatBody;
-    private String senderNumber;
-    private String receiverNumber;
     private boolean isGroup;
-    private RealmList<String> groupParticipants;
     private String date;
-    private String senderUsername;
-    private String receiverUsername;
+    private String chattrBoxId;
 
-    public String getSenderUsername() {
-        return senderUsername;
+    public String getChattrBoxId() {
+        return chattrBoxId;
     }
 
-    public void setSenderUsername(String senderUsername) {
-        this.senderUsername = senderUsername;
-    }
-
-    public String getReceiverUsername() {
-        return receiverUsername;
-    }
-
-    public void setReceiverUsername(String receiverUsername) {
-        this.receiverUsername = receiverUsername;
+    public void setChattrBoxId(String chattrBoxId) {
+        this.chattrBoxId = chattrBoxId;
     }
 
     public long getId() {
@@ -67,36 +53,12 @@ public class ChatItem extends RealmObject {
         this.chatBody = chatBody;
     }
 
-    public String getSenderNumber() {
-        return senderNumber;
-    }
-
-    public void setSenderNumber(String senderNumber) {
-        this.senderNumber = senderNumber;
-    }
-
-    public String getReceiverNumber() {
-        return receiverNumber;
-    }
-
-    public void setReceiverNumber(String receiverNumber) {
-        this.receiverNumber = receiverNumber;
-    }
-
     public boolean isGroup() {
         return isGroup;
     }
 
-    public void setGroup(boolean group) {
+    public void setIsGroup(boolean group) {
         isGroup = group;
-    }
-
-    public RealmList<String> getGroupParticipants() {
-        return groupParticipants;
-    }
-
-    public void setGroupParticipants(RealmList<String> groupParticipants) {
-        this.groupParticipants = groupParticipants;
     }
 
     public String getDate() {

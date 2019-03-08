@@ -21,9 +21,12 @@ import android.widget.Toast;
 
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.events.FriendDetailsFetchedEvent;
+import com.morningstar.chattr.managers.ChatManager;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.NetworkManager;
+import com.morningstar.chattr.managers.PrimaryKeyManager;
 import com.morningstar.chattr.pojo.ChatItem;
+import com.morningstar.chattr.pojo.ChattrBox;
 import com.morningstar.chattr.pojo.Friend;
 
 import org.greenrobot.eventbus.EventBus;
@@ -40,7 +43,6 @@ import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import io.realm.Sort;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
@@ -75,6 +77,9 @@ public class ChatActivity extends AppCompatActivity {
     private RealmResults<ChatItem> chatItemRealmResults;
     private Realm mRealm;
     private Friend friend;
+    private ChattrBox chattrBox;
+    private ChatItem chatItem;
+    private String chattrboxid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +113,12 @@ public class ChatActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(editTextMessageArea.getText().toString())) {
             Toast.makeText(this, "Empty message cannot be sent", Toast.LENGTH_SHORT).show();
         } else {
-            
+            String chatBody = editTextMessageArea.getText().toString();
+            ChatManager chatManager = new ChatManager();
+            chattrBox = chatManager.createChattrBox(my_user_Name, friend_user_name);
+            chatItem = chatManager.createChatItemInChattrBox(chattrBox.getChattrBoxId(), chatBody, "01/01/01", false);
+            chatManager.sendIndividualMessage(chattrBox.getChattrBoxId(), chatItem.getId(), chatBody, my_user_Name, friend_user_name, "01/01/01");
+            editTextMessageArea.setText("");
         }
     }
 
@@ -136,28 +146,15 @@ public class ChatActivity extends AppCompatActivity {
     private void getValueFromPrefs() {
         SharedPreferences sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
         my_number = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_MOBILE, "");
-        my_user_Name = "Me";
+        my_user_Name = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_USERNAME, "");
     }
 
     private void updateUi() {
-        chatItemRealmResults = mRealm.where(ChatItem.class)
-                .beginGroup()
-                .beginGroup()
-                .equalTo(ChatItem.SENDER_NUMBER, friend_user_number)
-                .and()
-                .equalTo(ChatItem.RECEIVER_NUMBER, my_number)
-                .endGroup()
-                .or()
-                .beginGroup()
-                .equalTo(ChatItem.RECEIVER_NUMBER, friend_user_number)
-                .and()
-                .equalTo(ChatItem.SENDER_NUMBER, my_number)
-                .endGroup()
-                .endGroup()
-                .sort(ChatItem.DATE, Sort.DESCENDING)
-                .findAll();
+        chattrboxid = PrimaryKeyManager.getObjectKeyForChattrBox(my_user_Name, friend_user_name);
 
-        if (chatItemRealmResults.size() > 0) {
+        chattrBox = mRealm.where(ChattrBox.class).equalTo(ChattrBox.CHATTRBOX_ID, chattrboxid).findFirst();
+
+        if (chattrBox != null) {
             textViewNoMessages.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         } else {

@@ -28,4 +28,15 @@ public class PrimaryKeyManager {
             return 0;
         }
     }
+
+    public static String getObjectKeyForChattrBox(String sender_username, String receiver_username) {
+        if (sender_username.compareTo(receiver_username) < 0)
+            return sender_username + receiver_username;
+        else
+            return receiver_username + sender_username;
+
+//        a negative int if this < that
+//        0 if this == that
+//        a positive int if this > that
+    }
 }

@@ -50,9 +50,11 @@ public class ConstantManager {
     public static final String REGISTRATION_COMPLETED_EVENT = "REGISTRATION_COMPLETE";
     public static final String FIREBASE_AUTH_TOKEN_GENERATED = "FIREBASE_AUTH_TOKEN_GENERATED";
     public static final String FRIEND_CREATED = "FRIEND_CREATED";
+    public static final String SEND_CHAT_MESSAGE_EVENT = "SEND_CHAT_MESSAGE_EVENT";
 
     public static final String SUCCESSFUL = "success";
     public static final String UNSUCCESSFUL = "failed";
+
     public static final String OFF = "offline";
     public static final String ON = "online";
     public static final String BUNDLE_EXTRAS = "bundle_extra";
