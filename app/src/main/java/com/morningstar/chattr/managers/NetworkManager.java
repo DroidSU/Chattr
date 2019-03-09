@@ -131,4 +131,10 @@ public class NetworkManager {
             e.printStackTrace();
         }
     }
+
+    public static void disconnectSocket() {
+        if (socket != null && socket.connected()) {
+            socket.disconnect();
+        }
+    }
 }

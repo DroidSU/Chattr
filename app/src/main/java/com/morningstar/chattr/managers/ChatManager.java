@@ -63,7 +63,7 @@ public class ChatManager {
         }
     }
 
-    public ChatItem createChatItemInChattrBox(String chattrBoxId, String chatBody, String date, boolean isGroup) {
+    public ChatItem createChatItemInChattrBox(String chattrBoxId, String chatBody, String date, boolean isGroup, String senderUsername) {
         try (Realm realm = Realm.getDefaultInstance()) {
             ChattrBox chattrBox = realm.where(ChattrBox.class).equalTo(ChattrBox.CHATTRBOX_ID, chattrBoxId).findFirst();
             chatIdRealmList = new RealmList<>();
@@ -77,8 +77,9 @@ public class ChatManager {
                     chatItem = realm.createObject(ChatItem.class, chatId);
                     chatItem.setChatBody(chatBody);
                     chatItem.setDate(date);
-                    chatItem.setIsGroup(false);
+                    chatItem.setIsGroup(isGroup);
                     chatItem.setChattrBoxId(chattrBoxId);
+                    chatItem.setSenderUsername(senderUsername);
                 }
             });
 

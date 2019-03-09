@@ -58,4 +58,6 @@ public class ConstantManager {
     public static final String OFF = "offline";
     public static final String ON = "online";
     public static final String BUNDLE_EXTRAS = "bundle_extra";
+    public static final String HEADER = "header";
+    public static final String FIREBASE_CHATS_DB = "Chats";
 }

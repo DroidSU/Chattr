@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Created by Sujoy Datta. Copyright (c) 2019. All rights reserved.
+  ~
+  ~ To the person who is reading this..
+  ~ When you finally understand how this works, please do explain it to me too at sujoydatta26@gmail.com
+  ~ P.S.: In case you are planning to use this without mentioning me, you will be met with mean judgemental looks and sarcastic comments.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/stickyHeaderTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="STICKY HEADER"
+        android:textColor="@color/md_black_1000"
+        android:textSize="18sp" />
+</LinearLayout>

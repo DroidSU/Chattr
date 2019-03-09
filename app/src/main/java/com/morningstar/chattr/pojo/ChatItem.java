@@ -20,6 +20,7 @@ public class ChatItem extends RealmObject {
     public static String RECEIVER_NUMBER = "receiverNumber";
     public static String DATE = "date";
     public static String CHATTR_BOX_ID = "chattrBoxId";
+    public static String CHAT_SENDER = "sender";
 
     @PrimaryKey
     private String id;
@@ -28,6 +29,7 @@ public class ChatItem extends RealmObject {
     private boolean isGroup;
     private String date;
     private String chattrBoxId;
+    private String senderUsername;
 
     public String getChattrBoxId() {
         return chattrBoxId;
@@ -67,5 +69,13 @@ public class ChatItem extends RealmObject {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getSenderUsername() {
+        return senderUsername;
+    }
+
+    public void setSenderUsername(String senderUsername) {
+        this.senderUsername = senderUsername;
     }
 }
