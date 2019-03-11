@@ -60,4 +60,6 @@ public class ConstantManager {
     public static final String BUNDLE_EXTRAS = "bundle_extra";
     public static final String HEADER = "header";
     public static final String FIREBASE_CHATS_DB = "Chats";
+    public static final String FIREBASE_NEW_CHAT_IDS_DB = "NewMessageIds";
+    public static final String FIREBASE_NEW_CHAT_ID = "NewMessageId";
 }

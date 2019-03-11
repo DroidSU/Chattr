@@ -61,9 +61,11 @@ public class ChatActivityRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
         if (chatItem.getSenderUsername().equalsIgnoreCase(friend_username)) {
             FriendChatAreaViewHolder friendChatAreaViewHolder = (FriendChatAreaViewHolder) holder;
             friendChatAreaViewHolder.textViewFriendChatArea.setText(chatItem.getChatBody());
+            friendChatAreaViewHolder.textViewFriendChatDate.setText(chatItem.getDate());
         } else {
             UserChatAreaViewHolder userChatAreaViewHolder = (UserChatAreaViewHolder) holder;
             userChatAreaViewHolder.textViewUserChatArea.setText(chatItem.getChatBody());
+            userChatAreaViewHolder.textViewUserChatDate.setText(chatItem.getDate());
         }
     }
 
@@ -76,28 +78,30 @@ public class ChatActivityRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
     public int getItemViewType(int position) {
         String sender_type = chatItemArrayList.get(position).getSenderUsername();
         if (sender_type.equalsIgnoreCase(user_username)) {
-            return FRIEND_CHAT;
-        } else if (sender_type.equalsIgnoreCase(friend_username))
             return USER_CHAT;
+        } else if (sender_type.equalsIgnoreCase(friend_username))
+            return FRIEND_CHAT;
         else
             return HEADER;
     }
 
     class UserChatAreaViewHolder extends RecyclerView.ViewHolder {
         TextView textViewUserChatArea;
-
+        TextView textViewUserChatDate;
         UserChatAreaViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewUserChatArea = itemView.findViewById(R.id.user_chat_area_textView);
+            textViewUserChatDate = itemView.findViewById(R.id.user_chat_sent_date);
         }
     }
 
     class FriendChatAreaViewHolder extends RecyclerView.ViewHolder {
         TextView textViewFriendChatArea;
-
+        TextView textViewFriendChatDate;
         FriendChatAreaViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewFriendChatArea = itemView.findViewById(R.id.friend_chat_area_textView);
+            textViewFriendChatDate = itemView.findViewById(R.id.friend_chat_sent_date);
         }
     }
 

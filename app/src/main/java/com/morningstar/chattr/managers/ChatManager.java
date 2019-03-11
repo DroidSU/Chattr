@@ -90,6 +90,7 @@ public class ChatManager {
                         chatIdRealmList = chattrBox.getChatIds();
                         chatIdRealmList.add(chatId);
                         chattrBox.setChatIds(chatIdRealmList);
+                        realm.copyToRealmOrUpdate(chattrBox);
                     }
                 });
             }

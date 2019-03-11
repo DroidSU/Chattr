@@ -29,6 +29,7 @@
             android:hint="CHAT AREA"
             android:padding="12dp"
             android:textAlignment="viewEnd"
+            android:textColor="@color/md_black_1000"
             android:textSize="18sp" />
     </androidx.cardview.widget.CardView>
 

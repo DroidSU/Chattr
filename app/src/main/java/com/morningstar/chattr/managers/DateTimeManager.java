@@ -8,12 +8,22 @@
 
 package com.morningstar.chattr.managers;
 
+import android.annotation.SuppressLint;
+
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DateTimeManager {
 
     public static long getCurrentSystemDate() {
         Calendar calendar = Calendar.getInstance();
         return calendar.getTimeInMillis();
+    }
+
+    public static String getCurrentDateAsString() {
+        Date date = new Date();
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+        return simpleDateFormat.format(date);
     }
 }

@@ -18,9 +18,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:gravity="start"
-        android:hint="TIME"
+        android:hint="DATE"
         android:padding="2dp"
         android:textAlignment="viewStart"
+        android:textColor="@color/md_black_1000"
         android:textSize="14sp" />
 
     <androidx.cardview.widget.CardView
