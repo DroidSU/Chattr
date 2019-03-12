@@ -31,6 +31,7 @@ public class ConstantManager {
     public static final String FIREBASE_IS_ONLINE_COLUMN = "Is_Online";
     public static final String FIREBASE_USER_STATUS_COLUMN = "Status";
     public static final String FIREBASE_IS_LOGGED_IN_COLUMN = "Is_LoggedIn";
+    public static final String FIREBASE_USER_INSTANCE_ID = "InstanceId";
 
     public static final String STRING_USERNAME = "username";
     public static final String STRING_NAME = "name";
@@ -62,4 +63,5 @@ public class ConstantManager {
     public static final String FIREBASE_CHATS_DB = "Chats";
     public static final String FIREBASE_NEW_CHAT_IDS_DB = "NewMessageIds";
     public static final String FIREBASE_NEW_CHAT_ID = "NewMessageId";
+    public static final String PREF_TITLE_USER_TOKEN = "InstanceId";
 }

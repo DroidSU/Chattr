@@ -13,4 +13,5 @@
     <string name="already_registered_sign_in_here">Already Registered? Sign in here</string>
     <string name="go_back">Go back</string>
     <string name="send_a_message">Send a message</string>
+    <string name="default_notification_channel_id">6996</string>
 </resources>

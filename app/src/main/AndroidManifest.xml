@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.ProfileActivity"></activity>
+        <activity android:name=".activities.ProfileActivity" />
         <activity android:name=".activities.ChatActivity" />
         <activity android:name=".activities.AllContactsActivity" />
         <activity android:name=".activities.LoadingActivity" />
@@ -31,9 +31,25 @@
         <activity android:name=".activities.LoginUsingEmailActivity" />
         <activity android:name=".activities.NoNetworkActivity" />
         <activity android:name=".activities.RegisterUsingEmail" /> <!-- <activity android:name=".activities.AccountDetailsActivity" /> -->
+
         <service
-            android:name=".services.ContactSyncService"
-            android:exported="false" />
+            android:name=".services.ChattrFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".services.ContactSyncService" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_chat" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPrimaryDark" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
     </application>
 
 </manifest>

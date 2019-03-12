@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.NetworkManager;
@@ -42,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Socket socket;
     private SharedPreferences sharedPreferences;
+    private String userInstanceId;
 
+    private DatabaseReference databaseReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,19 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
         getValueFromPreference();
 
-        NetworkManager.isConnectToSocket();
-        NetworkManager.changeLoggedInStatus(this, ConstantManager.ON);
-    }
-
-    private void getValueFromPreference() {
-        sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
-        mobileNumber = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_MOBILE, null);
-        userName = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_USERNAME, null);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         if (userName == null || userName.isEmpty() || mobileNumber == null || mobileNumber.isEmpty() || mobileNumber.length() != 10) {
             Intent intent = new Intent(MainActivity.this, RegisterUsingEmail.class);
             startActivity(intent);
@@ -83,6 +74,26 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+
+        NetworkManager.isConnectToSocket();
+        NetworkManager.changeLoggedInStatus(this, ConstantManager.ON);
+
+        if (userInstanceId != null) {
+            FirebaseDatabase.getInstance().getReference(ConstantManager.FIREBASE_USERS_TABLE)
+                    .child(userName).child(ConstantManager.FIREBASE_USER_INSTANCE_ID).setValue(userInstanceId);
+        }
+    }
+
+    private void getValueFromPreference() {
+        sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
+        mobileNumber = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_MOBILE, null);
+        userName = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_USERNAME, null);
+        userInstanceId = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_TOKEN, null);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override

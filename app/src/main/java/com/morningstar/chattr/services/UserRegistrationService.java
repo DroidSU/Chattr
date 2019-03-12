@@ -17,9 +17,13 @@ import android.widget.Toast;
 
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.morningstar.chattr.activities.LoadingActivity;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.UtilityManager;
@@ -27,6 +31,7 @@ import com.morningstar.chattr.managers.UtilityManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -59,6 +64,7 @@ public class UserRegistrationService {
     private String emailAddress;
     private String userName;
     private String mobileNumber;
+    private String firebaseTokenId;
 
     public static UserRegistrationService newInstance() {
         if (userRegistrationService == null) {
@@ -135,6 +141,12 @@ public class UserRegistrationService {
                             button.setProgress(0);
                         }
 
+                        try {
+                            FirebaseInstanceId.getInstance().deleteInstanceId();
+                            FirebaseInstanceId.getInstance().getInstanceId();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         return RESULT_CODE;
                     }
                 })
@@ -170,10 +182,12 @@ public class UserRegistrationService {
                         } else if (integer.equals(USER_ERROR_INVALID_MOBILE_NUMBER)) {
                             editTextMobileNumber.setError("Please enter 10 digits number");
                             button.setProgress(0);
-                        } else if (integer.equals(REGISTRATION_FAILURE)) {
+                        } else {
                             button.setProgress(-1);
                             Log.i(TAG, "Registration failed");
                         }
+
+
                     }
                 });
     }
@@ -206,12 +220,26 @@ public class UserRegistrationService {
                         if (response.equalsIgnoreCase(ConstantManager.REGISTRATION_SUCCESS_MESSAGE)) {
                             Log.i(TAG, "Response received: " + response);
                             actionProcessButton.setProgress(100);
-
+                            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(
+                                    new OnSuccessListener<InstanceIdResult>() {
+                                        @Override
+                                        public void onSuccess(InstanceIdResult instanceIdResult) {
+                                            firebaseTokenId = instanceIdResult.getId();
+                                        }
+                                    }
+                            )
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i(TAG, e.getMessage());
+                                        }
+                                    });
                             SharedPreferences sharedPreferences = activity.getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, emailAddress);
                             editor.putString(ConstantManager.PREF_TITLE_USER_USERNAME, userName);
                             editor.putString(ConstantManager.PREF_TITLE_USER_MOBILE, mobileNumber);
+                            editor.putString(ConstantManager.PREF_TITLE_USER_TOKEN, firebaseTokenId);
                             editor.apply();
 
                             activity.startActivity(new Intent(activity, LoadingActivity.class));
@@ -268,6 +296,12 @@ public class UserRegistrationService {
                                         }
                                     });
 
+                            try {
+                                FirebaseInstanceId.getInstance().deleteInstanceId();
+                                FirebaseInstanceId.getInstance().getInstanceId();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             //Should add custom token and not allow signing in using firebase generated token
                             FirebaseAuth.getInstance().signOut();
                             return USER_NO_ERRORS;
@@ -348,11 +382,25 @@ public class UserRegistrationService {
                                                 button.setProgress(-1);
                                             } else {
                                                 button.setProgress(100);
+                                                FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                                    @Override
+                                                    public void onSuccess(InstanceIdResult instanceIdResult) {
+                                                        firebaseTokenId = instanceIdResult.getId();
+                                                    }
+                                                })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Log.i(TAG, e.getMessage());
+                                                            }
+                                                        });
+
                                                 SharedPreferences sharedPreferences = activity.getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
                                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                                 editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, email);
                                                 editor.putString(ConstantManager.PREF_TITLE_USER_USERNAME, displayname);
                                                 editor.putString(ConstantManager.PREF_TITLE_USER_MOBILE, mobNumber);
+                                                editor.putString(ConstantManager.PREF_TITLE_USER_TOKEN, firebaseTokenId);
                                                 editor.apply();
 
                                                 activity.startActivity(new Intent(activity, LoadingActivity.class));
