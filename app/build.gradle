@@ -33,10 +33,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
+//            minifyEnabled true
             debuggable true
 //            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -54,7 +54,7 @@ dependencies {
     //firebase
     implementation 'com.google.firebase:firebase-database:16.1.0'
     implementation 'com.google.firebase:firebase-storage:16.1.0'
-    implementation 'com.google.firebase:firebase-auth:16.1.0'
+    implementation 'com.google.firebase:firebase-auth:16.2.0'
     implementation 'com.google.firebase:firebase-messaging:17.4.0'
     //lottie animation
     implementation 'com.airbnb.android:lottie:2.5.0'
@@ -84,4 +84,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
     //EventBus
     implementation 'org.greenrobot:eventbus:3.1.1'
+    //Proteus
+    implementation 'com.github.flipkart-incubator.proteus:proteus-core:5.0.0-rc12@aar'
+    implementation 'com.github.flipkart-incubator.proteus:gson-adapter:5.0.0-rc12@aar'
 }

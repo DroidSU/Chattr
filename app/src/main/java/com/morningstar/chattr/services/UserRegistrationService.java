@@ -145,7 +145,7 @@ public class UserRegistrationService {
                             FirebaseInstanceId.getInstance().deleteInstanceId();
                             FirebaseInstanceId.getInstance().getInstanceId();
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            Log.i(TAG, e.getMessage());
                         }
                         return RESULT_CODE;
                     }
@@ -220,11 +220,15 @@ public class UserRegistrationService {
                         if (response.equalsIgnoreCase(ConstantManager.REGISTRATION_SUCCESS_MESSAGE)) {
                             Log.i(TAG, "Response received: " + response);
                             actionProcessButton.setProgress(100);
+                            SharedPreferences sharedPreferences = activity.getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
                             FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(
                                     new OnSuccessListener<InstanceIdResult>() {
                                         @Override
                                         public void onSuccess(InstanceIdResult instanceIdResult) {
+                                            SharedPreferences.Editor editor = sharedPreferences.edit();
                                             firebaseTokenId = instanceIdResult.getId();
+                                            editor.putString(ConstantManager.PREF_TITLE_USER_TOKEN, firebaseTokenId);
+                                            editor.apply();
                                         }
                                     }
                             )
@@ -234,12 +238,10 @@ public class UserRegistrationService {
                                             Log.i(TAG, e.getMessage());
                                         }
                                     });
-                            SharedPreferences sharedPreferences = activity.getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, emailAddress);
                             editor.putString(ConstantManager.PREF_TITLE_USER_USERNAME, userName);
                             editor.putString(ConstantManager.PREF_TITLE_USER_MOBILE, mobileNumber);
-                            editor.putString(ConstantManager.PREF_TITLE_USER_TOKEN, firebaseTokenId);
                             editor.apply();
 
                             activity.startActivity(new Intent(activity, LoadingActivity.class));
