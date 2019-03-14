@@ -226,7 +226,7 @@ public class UserRegistrationService {
                                         @Override
                                         public void onSuccess(InstanceIdResult instanceIdResult) {
                                             SharedPreferences.Editor editor = sharedPreferences.edit();
-                                            firebaseTokenId = instanceIdResult.getId();
+                                            firebaseTokenId = instanceIdResult.getToken();
                                             editor.putString(ConstantManager.PREF_TITLE_USER_TOKEN, firebaseTokenId);
                                             editor.apply();
                                         }
@@ -387,7 +387,11 @@ public class UserRegistrationService {
                                                 FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                                                     @Override
                                                     public void onSuccess(InstanceIdResult instanceIdResult) {
-                                                        firebaseTokenId = instanceIdResult.getId();
+                                                        firebaseTokenId = instanceIdResult.getToken();
+                                                        SharedPreferences sharedPreferences = activity.getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
+                                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                        editor.putString(ConstantManager.PREF_TITLE_USER_TOKEN, firebaseTokenId);
+                                                        editor.apply();
                                                     }
                                                 })
                                                         .addOnFailureListener(new OnFailureListener() {
@@ -402,7 +406,6 @@ public class UserRegistrationService {
                                                 editor.putString(ConstantManager.PREF_TITLE_USER_EMAIL, email);
                                                 editor.putString(ConstantManager.PREF_TITLE_USER_USERNAME, displayname);
                                                 editor.putString(ConstantManager.PREF_TITLE_USER_MOBILE, mobNumber);
-                                                editor.putString(ConstantManager.PREF_TITLE_USER_TOKEN, firebaseTokenId);
                                                 editor.apply();
 
                                                 activity.startActivity(new Intent(activity, LoadingActivity.class));

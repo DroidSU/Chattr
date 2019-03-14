@@ -64,4 +64,5 @@ public class ConstantManager {
     public static final String FIREBASE_NEW_CHAT_IDS_DB = "NewMessageIds";
     public static final String FIREBASE_NEW_CHAT_ID = "NewMessageId";
     public static final String PREF_TITLE_USER_TOKEN = "InstanceId";
+    public static final String NEW_MESSAGE_RECEIVED = "NEW_MESSAGE_RECEIVED";
 }

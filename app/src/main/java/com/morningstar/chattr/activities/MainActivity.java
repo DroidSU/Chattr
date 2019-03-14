@@ -69,12 +69,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-        if (!NetworkManager.hasInternetAccess()) {
-            Intent intent = new Intent(MainActivity.this, NoNetworkActivity.class);
-            startActivity(intent);
-            finish();
-        }
-
         NetworkManager.isConnectToSocket();
         NetworkManager.changeLoggedInStatus(this, ConstantManager.ON);
 

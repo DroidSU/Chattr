@@ -133,6 +133,30 @@ public class ChatActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         setUpRecycler();
+
+        socket.on(ConstantManager.NEW_MESSAGE_RECEIVED, saveNewChatToDb());
+    }
+
+    private Emitter.Listener saveNewChatToDb() {
+        return new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JSONObject jsonObject = (JSONObject) args[0];
+                try {
+                    String chattrBoxId = jsonObject.getString("chattrBoxId");
+                    String chatId = jsonObject.getString("chatId");
+                    String chatBody = jsonObject.getString("chatBody");
+                    String sender = jsonObject.getString("sender_username");
+                    String receiver = jsonObject.getString("receiver_username");
+                    String date = jsonObject.getString("date");
+
+                    EventBus.getDefault().post(new FriendDetailsFetchedEvent());
+                    setUpDatabaseListener();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
     }
 
     private void setUpDatabaseListener() {
@@ -190,8 +214,8 @@ public class ChatActivity extends AppCompatActivity {
     private void saveValuesToRealm(String chat_body, String date, String senderUsername) {
         ChatManager chatManager = new ChatManager();
         chatItem = chatManager.createChatItemInChattrBox(chattrboxid, chat_body, date, false, senderUsername);
-        recyclerView.invalidate();
         setUpRecycler();
+        recyclerView.invalidate();
     }
 
     private void setUpRecycler() {
