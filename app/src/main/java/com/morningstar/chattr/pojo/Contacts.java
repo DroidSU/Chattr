@@ -14,10 +14,21 @@ import io.realm.RealmObject;
 @Keep
 public class Contacts extends RealmObject {
 
+    public static final String CONTACT_USERNAME = "contactUsername";
+
     private String contactNumber;
     private String contactName;
     private boolean isAdded;
     private String contactID;
+    private String contactUsername;
+
+    public String getContactUsername() {
+        return contactUsername;
+    }
+
+    public void setContactUsername(String contactUsername) {
+        this.contactUsername = contactUsername;
+    }
 
     public boolean isAdded() {
         return isAdded;

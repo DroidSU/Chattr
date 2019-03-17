@@ -144,7 +144,7 @@ public class ContactsManager {
                                 public void execute(Realm realm) {
                                     if (contacts != null) {
                                         contacts.setAdded(true);
-
+                                        contacts.setContactUsername(dataSnapshot.child(mobNumber).child("Username").getValue(String.class));
                                         Log.i(TAG, contacts.getContactName() + " synced");
                                     }
                                 }

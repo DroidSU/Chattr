@@ -42,6 +42,7 @@ public class ConstantManager {
     public static final String CONTACT_NAME = "contactName";
     public static final String CONTACT_ID = "contactID";
     public static final String IS_CONTACT_ADDED = "isAdded";
+    public static final String CONTACT_USERNAME = "contactUsername";
     public static final String STRING_PASSWORD = "password";
 
     public static final String REGISTRATION_SUCCESS_MESSAGE = "REGISTRATION_SUCCESS";
@@ -65,4 +66,6 @@ public class ConstantManager {
     public static final String FIREBASE_NEW_CHAT_ID = "NewMessageId";
     public static final String PREF_TITLE_USER_TOKEN = "InstanceId";
     public static final String NEW_MESSAGE_RECEIVED = "NEW_MESSAGE_RECEIVED";
+    public static final String FRIEND_USERNAME = "friend_username";
+    public static final String INITIATOR_ACTIVITY = "initiator_activity";
 }

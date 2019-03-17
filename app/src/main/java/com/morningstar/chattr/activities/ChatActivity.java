@@ -12,29 +12,26 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.adapters.ChatActivityRecyclerAdapter;
+import com.morningstar.chattr.adapters.ContactsRecyclerAdapter;
 import com.morningstar.chattr.events.FriendDetailsFetchedEvent;
+import com.morningstar.chattr.events.NewChatReceivedEvent;
 import com.morningstar.chattr.managers.ChatManager;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.DateTimeManager;
 import com.morningstar.chattr.managers.NetworkManager;
 import com.morningstar.chattr.managers.PrimaryKeyManager;
-import com.morningstar.chattr.models.FirebaseChatModel;
 import com.morningstar.chattr.pojo.ChatItem;
 import com.morningstar.chattr.pojo.ChattrBox;
 import com.morningstar.chattr.pojo.Friend;
+import com.morningstar.chattr.services.ChattrFirebaseMessagingService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -44,7 +41,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -80,7 +76,7 @@ public class ChatActivity extends AppCompatActivity {
     TextView textViewNoMessages;
 
     private boolean isConnectedToSocket;
-    private String friend_user_name;
+    private String friend_username;
     private String my_user_Name;
     private String friend_user_number;
     private String my_number;
@@ -97,6 +93,7 @@ public class ChatActivity extends AppCompatActivity {
     private String chattrboxid;
     private ChatActivityRecyclerAdapter chatActivityRecyclerAdapter;
     private String newChatId;
+    private String initiator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +110,7 @@ public class ChatActivity extends AppCompatActivity {
         getValueFromPrefs();
 
         currentDate = DateTimeManager.getCurrentDateAsString();
-        chattrboxid = PrimaryKeyManager.getObjectKeyForChattrBox(my_user_Name, friend_user_name);
+        chattrboxid = PrimaryKeyManager.getObjectKeyForChattrBox(my_user_Name, friend_username);
         chattrBox = mRealm.where(ChattrBox.class).equalTo(ChattrBox.CHATTRBOX_ID, chattrboxid).findFirst();
 
         socket = NetworkManager.getConnectedSocket();
@@ -121,112 +118,29 @@ public class ChatActivity extends AppCompatActivity {
 
         if (friend == null) {
             //creating friend object
-            NetworkManager.sendNumberForFriendDetails(friend_user_number);
+            if (friend_user_number != null)
+                NetworkManager.sendNumberForFriendDetails(friend_user_number);
+            else
+                NetworkManager.sendUsernameForFrientDetails(friend_username);
+
             socket.on(ConstantManager.FRIEND_CREATED, getFriendDetailsResponse());
-        } else {
-            Log.i(TAG, "Friend object exists");
-            setUpDatabaseListener();
         }
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setReverseLayout(true);
+//        linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         setUpRecycler();
-
-        socket.on(ConstantManager.NEW_MESSAGE_RECEIVED, saveNewChatToDb());
-    }
-
-    private Emitter.Listener saveNewChatToDb() {
-        return new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                JSONObject jsonObject = (JSONObject) args[0];
-                try {
-                    String chattrBoxId = jsonObject.getString("chattrBoxId");
-                    String chatId = jsonObject.getString("chatId");
-                    String chatBody = jsonObject.getString("chatBody");
-                    String sender = jsonObject.getString("sender_username");
-                    String receiver = jsonObject.getString("receiver_username");
-                    String date = jsonObject.getString("date");
-
-                    EventBus.getDefault().post(new FriendDetailsFetchedEvent());
-                    setUpDatabaseListener();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-    }
-
-    private void setUpDatabaseListener() {
-        FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_NEW_CHAT_IDS_DB).child(chattrboxid).child(ConstantManager.FIREBASE_NEW_CHAT_ID)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        newChatId = dataSnapshot.getValue(String.class);
-                        if (newChatId != null)
-                            getNewChatFromFirebase();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-    }
-
-    private void getNewChatFromFirebase() {
-        //get the latest chat item from firebase and compare it to check if the chat item already exists in the database
-        if (newChatId != null) {
-            try (Realm realm = Realm.getDefaultInstance()) {
-                ChatItem newChatItem = realm.where(ChatItem.class).equalTo(ChatItem.ID, newChatId).findFirst();
-                if (newChatItem == null) {
-                    FirebaseDatabase.getInstance().getReference(ConstantManager.FIREBASE_CHATS_DB).child(chattrboxid).child(newChatId)
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()) {
-                                        FirebaseChatModel firebaseChatModel = dataSnapshot.getValue(FirebaseChatModel.class);
-                                        if (firebaseChatModel != null) {
-                                            String chat_body = firebaseChatModel.getMessage();
-                                            String date = firebaseChatModel.getDate();
-                                            String senderUsername = firebaseChatModel.getSender_username();
-                                            if (senderUsername.equalsIgnoreCase(friend_user_name))
-                                                saveValuesToRealm(chat_body, date, senderUsername);
-                                        } else {
-                                            Toast.makeText(ChatActivity.this, "Could not save message", Toast.LENGTH_SHORT).show();
-                                        }
-
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-                }
-            }
-        }
-    }
-
-    private void saveValuesToRealm(String chat_body, String date, String senderUsername) {
-        ChatManager chatManager = new ChatManager();
-        chatItem = chatManager.createChatItemInChattrBox(chattrboxid, chat_body, date, false, senderUsername);
-        setUpRecycler();
-        recyclerView.invalidate();
     }
 
     private void setUpRecycler() {
-
         getAllChatItems();
         if (chatItemArrayList.size() > 0) {
             textViewNoMessages.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
-            chatActivityRecyclerAdapter = new ChatActivityRecyclerAdapter(this, chatItemArrayList, my_user_Name, friend_user_name);
+            chatActivityRecyclerAdapter = new ChatActivityRecyclerAdapter(this, chatItemArrayList, my_user_Name, friend_username);
             recyclerView.setAdapter(chatActivityRecyclerAdapter);
-            chatActivityRecyclerAdapter.notifyDataSetChanged();
+//            chatActivityRecyclerAdapter.notifyDataSetChanged();
         } else {
             textViewNoMessages.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
@@ -250,9 +164,10 @@ public class ChatActivity extends AppCompatActivity {
             String chatBody = editTextMessageArea.getText().toString();
             if (NetworkManager.hasInternetAccess()) {
                 ChatManager chatManager = new ChatManager();
-                chattrBox = chatManager.createChattrBox(my_user_Name, friend_user_name);
-                chatItem = chatManager.createChatItemInChattrBox(chattrBox.getChattrBoxId(), chatBody, currentDate, false, my_user_Name);
-                chatManager.sendIndividualMessage(chattrBox.getChattrBoxId(), chatItem.getId(), chatBody, my_user_Name, friend_user_name, currentDate);
+                chattrBox = chatManager.createChattrBox(my_user_Name, friend_username);
+                //send -1 to get a new chat item
+                chatItem = chatManager.createChatItemInChattrBox("-1", chattrBox.getChattrBoxId(), chatBody, currentDate, false, my_user_Name);
+                chatManager.sendIndividualMessage(chattrBox.getChattrBoxId(), chatItem.getId(), chatBody, my_user_Name, friend_username, currentDate);
                 recyclerView.invalidate();
                 setUpRecycler();
                 editTextMessageArea.setText("");
@@ -263,8 +178,10 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getFriendObjectFromRealm() {
-        friend = mRealm.where(Friend.class).equalTo(Friend.FRIEND_MOB_NUMBER, friend_user_number).findFirst();
-        textViewUserName.setText(friend_user_name);
+        if (friend_user_number != null)
+            friend = mRealm.where(Friend.class).equalTo(Friend.FRIEND_MOB_NUMBER, friend_user_number).findFirst();
+        else
+            friend = mRealm.where(Friend.class).equalTo(Friend.FRIEND_USERNAME, friend_username).findFirst();
     }
 
     private Emitter.Listener getFriendDetailsResponse() {
@@ -274,17 +191,16 @@ public class ChatActivity extends AppCompatActivity {
                 JSONObject jsonObject = (JSONObject) args[0];
                 try {
                     friend_user_number = jsonObject.getString("friendMobNumber");
-                    friend_user_name = jsonObject.getString("friendUsername");
+                    friend_username = jsonObject.getString("friendUsername");
 
                     textViewUserName.post(new Runnable() {
                         @Override
                         public void run() {
-                            textViewUserName.setText(friend_user_name);
+                            textViewUserName.setText(friend_username);
                         }
                     });
 
                     EventBus.getDefault().post(new FriendDetailsFetchedEvent());
-                    setUpDatabaseListener();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -301,8 +217,16 @@ public class ChatActivity extends AppCompatActivity {
     private void getIntentExtras() {
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra(ConstantManager.BUNDLE_EXTRAS);
-        friend_user_name = bundle.getString(ConstantManager.CONTACT_NAME);
-        friend_user_number = bundle.getString(ConstantManager.CONTACT_NUMBER);
+        initiator = bundle.getString(ConstantManager.INITIATOR_ACTIVITY);
+        if (initiator != null) {
+            if (initiator.equalsIgnoreCase(ContactsRecyclerAdapter.TAG)) {
+                friend_user_number = bundle.getString(ConstantManager.CONTACT_NUMBER);
+                friend_username = bundle.getString(ConstantManager.CONTACT_USERNAME);
+            } else if (initiator.equalsIgnoreCase(ChattrFirebaseMessagingService.TAG))
+                friend_username = bundle.getString(ConstantManager.FRIEND_USERNAME);
+
+            textViewUserName.setText(friend_username);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -311,9 +235,15 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void execute(Realm realm) {
                 friend = mRealm.createObject(Friend.class, friend_user_number);
-                friend.setFriendUsername(friend_user_name);
+                friend.setFriendUsername(friend_username);
             }
         });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void newMessageReceived(NewChatReceivedEvent newChatReceivedEvent) {
+        setUpRecycler();
+        recyclerView.invalidate();
     }
 
     @OnClick(R.id.imageView_go_back)

@@ -14,7 +14,7 @@ import io.realm.annotations.PrimaryKey;
 public class Friend extends RealmObject {
 
     public static String FRIEND_MOB_NUMBER = "friendMobNumber";
-    public static String FRIEND_MOB_USERNAME = "friendUsername";
+    public static String FRIEND_USERNAME = "friendUsername";
 
     @PrimaryKey
     private String friendMobNumber;

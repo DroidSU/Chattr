@@ -32,7 +32,7 @@ import io.socket.client.Socket;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    public static final String TAG = "MainActivity";
 
     @BindView(R.id.mainActivityToolbar)
     Toolbar toolbar;

@@ -33,6 +33,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecyclerAdapter.ContactsRecyclerViewHolder> {
 
+    public static final String TAG = "ContactsRecycler";
+
     private View view;
     private Context context;
     private ArrayList<Contacts> contactsArrayList;
@@ -60,8 +62,9 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putString(ConstantManager.CONTACT_NAME, contactsArrayList.get(position).getContactName());
+                bundle.putString(ConstantManager.INITIATOR_ACTIVITY, TAG);
                 bundle.putString(ConstantManager.CONTACT_NUMBER, contactsArrayList.get(position).getContactNumber());
+                bundle.putString(ConstantManager.CONTACT_USERNAME, contactsArrayList.get(position).getContactUsername());
                 context.startActivity(new Intent(context, ChatActivity.class).putExtra(ConstantManager.BUNDLE_EXTRAS, bundle));
                 ((Activity) context).finish();
             }

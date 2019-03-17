@@ -8,5 +8,8 @@
 
 package com.morningstar.chattr.events;
 
+import androidx.annotation.Keep;
+
+@Keep
 public class FriendDetailsFetchedEvent {
 }

@@ -137,4 +137,22 @@ public class NetworkManager {
             socket.disconnect();
         }
     }
+
+    public static void sendUsernameForFrientDetails(String friend_user_name) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("friendUsername", friend_user_name);
+            if (socket == null) {
+                try {
+                    socket = IO.socket(ConstantManager.IP_LOCALHOST);
+                    socket.connect();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+            socket.emit("sendFriendDetailsForUsername", jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }

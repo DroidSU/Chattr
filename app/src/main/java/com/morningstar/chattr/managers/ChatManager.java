@@ -63,18 +63,20 @@ public class ChatManager {
         }
     }
 
-    public ChatItem createChatItemInChattrBox(String chattrBoxId, String chatBody, String date, boolean isGroup, String senderUsername) {
+    public ChatItem createChatItemInChattrBox(String chatId, String chattrBoxId, String chatBody, String date, boolean isGroup, String senderUsername) {
         try (Realm realm = Realm.getDefaultInstance()) {
             ChattrBox chattrBox = realm.where(ChattrBox.class).equalTo(ChattrBox.CHATTRBOX_ID, chattrBoxId).findFirst();
             chatIdRealmList = new RealmList<>();
             if (chattrBox != null) {
-                chatId = PrimaryKeyManager.getPrimaryKeyForChatItem(chattrBox.getSender_username());
+                if (chatId.equals("-1"))
+                    chatId = PrimaryKeyManager.getPrimaryKeyForChatItem(chattrBox.getSender_username());
             }
 
+            String finalChatId = chatId;
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    chatItem = realm.createObject(ChatItem.class, chatId);
+                    chatItem = realm.createObject(ChatItem.class, finalChatId);
                     chatItem.setChatBody(chatBody);
                     chatItem.setDate(date);
                     chatItem.setIsGroup(isGroup);
@@ -84,15 +86,19 @@ public class ChatManager {
             });
 
             if (chattrBox != null) {
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        chatIdRealmList = chattrBox.getChatIds();
-                        chatIdRealmList.add(chatId);
-                        chattrBox.setChatIds(chatIdRealmList);
-                        realm.copyToRealmOrUpdate(chattrBox);
-                    }
-                });
+                try {
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            chatIdRealmList = chattrBox.getChatIds();
+                            chatIdRealmList.add(finalChatId);
+                            chattrBox.setChatIds(chatIdRealmList);
+                            realm.copyToRealmOrUpdate(chattrBox);
+                        }
+                    });
+                } catch (Exception e) {
+                    Log.i(TAG, e.getMessage());
+                }
             }
         }
 
