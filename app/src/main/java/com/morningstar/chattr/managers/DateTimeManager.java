@@ -26,4 +26,11 @@ public class DateTimeManager {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy");
         return simpleDateFormat.format(date);
     }
+
+    public static String getCurrentTimeAsString() {
+        Calendar calendar = Calendar.getInstance();
+        Date currentLocalTime = calendar.getTime();
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm a");
+        return simpleDateFormat.format(currentLocalTime);
+    }
 }

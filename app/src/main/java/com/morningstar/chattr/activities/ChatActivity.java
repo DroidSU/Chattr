@@ -81,6 +81,8 @@ public class ChatActivity extends AppCompatActivity {
     private String friend_user_number;
     private String my_number;
     private String currentDate;
+    private String currentTime;
+    private long chatTimeStamp;
     private Socket socket;
 
     private RealmResults<ChatItem> chatItemRealmResults;
@@ -95,6 +97,9 @@ public class ChatActivity extends AppCompatActivity {
     private String newChatId;
     private String initiator;
 
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,12 +110,18 @@ public class ChatActivity extends AppCompatActivity {
         mRealm = Realm.getDefaultInstance();
         chatItemArrayList = new ArrayList<>();
         EventBus.getDefault().register(this);
+        sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
 
         getIntentExtras();
         getValueFromPrefs();
 
         currentDate = DateTimeManager.getCurrentDateAsString();
         chattrboxid = PrimaryKeyManager.getObjectKeyForChattrBox(my_user_Name, friend_username);
+
+        editor = sharedPreferences.edit();
+        editor.putString(ConstantManager.PREF_OPENED_CHAT_ID, chattrboxid);
+        editor.apply();
+
         chattrBox = mRealm.where(ChattrBox.class).equalTo(ChattrBox.CHATTRBOX_ID, chattrboxid).findFirst();
 
         socket = NetworkManager.getConnectedSocket();
@@ -127,8 +138,8 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-//        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
+        linearLayoutManager.setReverseLayout(true);
+//        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         setUpRecycler();
     }
@@ -150,7 +161,7 @@ public class ChatActivity extends AppCompatActivity {
     private void getAllChatItems() {
         chatItemArrayList.clear();
         try (Realm realm = Realm.getDefaultInstance()) {
-            chatItemRealmResults = realm.where(ChatItem.class).equalTo(ChatItem.CHATTR_BOX_ID, chattrboxid).sort(ChatItem.DATE, Sort.DESCENDING).findAll();
+            chatItemRealmResults = realm.where(ChatItem.class).equalTo(ChatItem.CHATTR_BOX_ID, chattrboxid).sort(ChatItem.CHAT_TIMESTAMP, Sort.DESCENDING).findAll();
             chatItemArrayList.addAll(chatItemRealmResults);
         }
     }
@@ -162,12 +173,14 @@ public class ChatActivity extends AppCompatActivity {
             Toast.makeText(this, "Empty message cannot be sent", Toast.LENGTH_SHORT).show();
         } else {
             String chatBody = editTextMessageArea.getText().toString();
+            currentTime = DateTimeManager.getCurrentTimeAsString();
+            chatTimeStamp = DateTimeManager.getCurrentSystemDate();
             if (NetworkManager.hasInternetAccess()) {
                 ChatManager chatManager = new ChatManager();
                 chattrBox = chatManager.createChattrBox(my_user_Name, friend_username);
                 //send -1 to get a new chat item
-                chatItem = chatManager.createChatItemInChattrBox("-1", chattrBox.getChattrBoxId(), chatBody, currentDate, false, my_user_Name);
-                chatManager.sendIndividualMessage(chattrBox.getChattrBoxId(), chatItem.getId(), chatBody, my_user_Name, friend_username, currentDate);
+                chatItem = chatManager.createChatItemInChattrBox("-1", chattrBox.getChattrBoxId(), chatBody, currentTime, chatTimeStamp, false, my_user_Name);
+                chatManager.sendIndividualMessage(chattrBox.getChattrBoxId(), chatItem.getId(), chatBody, my_user_Name, friend_username, currentTime, chatTimeStamp);
                 recyclerView.invalidate();
                 setUpRecycler();
                 editTextMessageArea.setText("");
@@ -209,7 +222,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getValueFromPrefs() {
-        SharedPreferences sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
         my_number = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_MOBILE, "");
         my_user_Name = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_USERNAME, "");
     }
@@ -244,6 +256,7 @@ public class ChatActivity extends AppCompatActivity {
     public void newMessageReceived(NewChatReceivedEvent newChatReceivedEvent) {
         setUpRecycler();
         recyclerView.invalidate();
+        recyclerView.smoothScrollToPosition(chatItemArrayList.size() - 1);
     }
 
     @OnClick(R.id.imageView_go_back)
@@ -254,6 +267,8 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        startActivity(new Intent(ChatActivity.this, AllContactsActivity.class));
+        finish();
     }
 
     @Override
@@ -261,6 +276,9 @@ public class ChatActivity extends AppCompatActivity {
         if (mRealm != null && !mRealm.isClosed())
             mRealm.close();
         EventBus.getDefault().unregister(this);
+        editor = sharedPreferences.edit();
+        editor.putString(ConstantManager.PREF_OPENED_CHAT_ID, null);
+        editor.apply();
         super.onDestroy();
     }
 }

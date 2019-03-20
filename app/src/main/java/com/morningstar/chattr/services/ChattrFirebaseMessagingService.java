@@ -1,10 +1,13 @@
 package com.morningstar.chattr.services;
 
-import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -19,6 +22,10 @@ import com.morningstar.chattr.pojo.ChatItem;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Objects;
+
+import androidx.core.app.NotificationCompat;
+
 public class ChattrFirebaseMessagingService extends FirebaseMessagingService {
 
     public static final String TAG = "MessagingService";
@@ -28,9 +35,11 @@ public class ChattrFirebaseMessagingService extends FirebaseMessagingService {
     private String chatBody;
     private String chatId;
     private String chattrBoxId;
-    private String date;
+    private String time;
+    private long timeStamp;
 
     private ChatItem chatItem;
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -40,60 +49,69 @@ public class ChattrFirebaseMessagingService extends FirebaseMessagingService {
         chatBody = remoteMessage.getData().get("message");
         chatId = remoteMessage.getData().get("chatId");
         chattrBoxId = remoteMessage.getData().get("chattrBoxId");
-        date = remoteMessage.getData().get("date");
+        time = remoteMessage.getData().get("time");
+        timeStamp = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("timeStamp")));
+        Log.i(TAG, "" + timeStamp);
 
         createNewChatItem(sender_username, receiver_username, chatBody, chatId, chattrBoxId);
-//        sendNotification(remoteMessage.getData().get("title"), remoteMessage.getData().get("body"), sender_username, receiver_username);
+        sharedPreferences = getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, MODE_PRIVATE);
+        String openedChatId = sharedPreferences.getString(ConstantManager.PREF_OPENED_CHAT_ID, null);
+        if (openedChatId == null || !openedChatId.equals(chattrBoxId))
+            sendNotification(remoteMessage);
         EventBus.getDefault().post(new NewChatReceivedEvent());
     }
 
     private void createNewChatItem(String sender_username, String receiver_username, String chatBody, String chatId, String chattrBoxId) {
         try {
             ChatManager chatManager = new ChatManager();
-            chatItem = chatManager.createChatItemInChattrBox(chatId, chattrBoxId, chatBody, date, false, sender_username);
+            chatItem = chatManager.createChatItemInChattrBox(chatId, chattrBoxId, chatBody, time, timeStamp, false, sender_username);
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
     }
 
-    private void sendNotification(String title, String body, String sender, String receiver) {
+    private void sendNotification(RemoteMessage remoteMessage) {
         //when the user clicks on the notification
         Intent intent = new Intent(this, ChatActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString(ConstantManager.FRIEND_USERNAME, sender);
+        bundle.putString(ConstantManager.FRIEND_USERNAME, remoteMessage.getData().get("sender"));
         bundle.putString(ConstantManager.INITIATOR_ACTIVITY, TAG);
         intent.putExtra(ConstantManager.BUNDLE_EXTRAS, bundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         //69 is the unique notification id
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 69, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Uri tone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            String id = getResources().getString(R.string.default_notification_channel_id);
-//            String name = "Chattr";
-//            String description = "Chattr Notifications";
-//            int importance = NotificationManager.IMPORTANCE_HIGH;
-//
-//            NotificationChannel notificationChannel = new NotificationChannel(id, name, importance);
-//            notificationChannel.setDescription(description);
-//            notificationChannel.enableLights(true);
-//            notificationChannel.setLightColor(Color.GREEN);
-//            notificationManager.createNotificationChannel(notificationChannel);
-//        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(ChattrFirebaseMessagingService.this, getResources().getString(R.string.default_notification_channel_id));
+        builder.setSmallIcon(R.drawable.ic_chat)
+                .setContentTitle(remoteMessage.getData().get("body"))
+                .setContentText(remoteMessage.getData().get("message"))
+                .setSound(tone)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        Notification notification = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            notification = new Notification.Builder(this)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle(title)
-                    .setContentText(body)
-                    .setColor(Color.BLUE)
-                    .setAutoCancel(true)
-                    .setContentIntent(pendingIntent)
-                    .setChannelId(getResources().getString(R.string.default_notification_channel_id))
-                    .build();
+            String id = getResources().getString(R.string.default_notification_channel_id);
+            String name = "New Message";
+            String description = "Chattr Notifications";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+            NotificationChannel notificationChannel = new NotificationChannel(id, name, importance);
+            notificationChannel.setDescription(description);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.GREEN);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            notificationManager.createNotificationChannel(notificationChannel);
         }
 
-        notificationManager.notify("NewChat", 69, notification);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            builder.setChannelId("channel_id");
+//        }
+
+        notificationManager.notify(Integer.parseInt(getResources().getString(R.string.default_notification_channel_id)), builder.build());
     }
 }

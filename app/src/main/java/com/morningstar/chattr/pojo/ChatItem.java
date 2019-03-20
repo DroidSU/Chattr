@@ -18,18 +18,37 @@ public class ChatItem extends RealmObject {
     public static String IS_GROUP = "isGroup";
     public static String SENDER_NUMBER = "senderNumber";
     public static String RECEIVER_NUMBER = "receiverNumber";
-    public static String DATE = "date";
+    public static String TIME = "time";
     public static String CHATTR_BOX_ID = "chattrBoxId";
     public static String CHAT_SENDER = "sender";
+    public static String CHAT_TIMESTAMP = "chatTimeStamp";
 
     @PrimaryKey
     private String id;
 
     private String chatBody;
     private boolean isGroup;
-    private String date;
+    private String time;
     private String chattrBoxId;
     private String senderUsername;
+    private long chatTimeStamp;
+
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public long getChatTimeStamp() {
+        return chatTimeStamp;
+    }
+
+    public void setChatTimeStamp(long chatTimeStamp) {
+        this.chatTimeStamp = chatTimeStamp;
+    }
 
     public String getChattrBoxId() {
         return chattrBoxId;
@@ -61,14 +80,6 @@ public class ChatItem extends RealmObject {
 
     public void setIsGroup(boolean group) {
         isGroup = group;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public String getSenderUsername() {

@@ -63,7 +63,7 @@ public class ChatManager {
         }
     }
 
-    public ChatItem createChatItemInChattrBox(String chatId, String chattrBoxId, String chatBody, String date, boolean isGroup, String senderUsername) {
+    public ChatItem createChatItemInChattrBox(String chatId, String chattrBoxId, String chatBody, String time, long timeStamp, boolean isGroup, String senderUsername) {
         try (Realm realm = Realm.getDefaultInstance()) {
             ChattrBox chattrBox = realm.where(ChattrBox.class).equalTo(ChattrBox.CHATTRBOX_ID, chattrBoxId).findFirst();
             chatIdRealmList = new RealmList<>();
@@ -78,10 +78,11 @@ public class ChatManager {
                 public void execute(Realm realm) {
                     chatItem = realm.createObject(ChatItem.class, finalChatId);
                     chatItem.setChatBody(chatBody);
-                    chatItem.setDate(date);
+                    chatItem.setTime(time);
                     chatItem.setIsGroup(isGroup);
                     chatItem.setChattrBoxId(chattrBoxId);
                     chatItem.setSenderUsername(senderUsername);
+                    chatItem.setChatTimeStamp(timeStamp);
                 }
             });
 
@@ -105,7 +106,7 @@ public class ChatManager {
         return chatItem;
     }
 
-    public void sendIndividualMessage(String chattrBoxId, String chatId, String chatBody, String sender_username, String receiver_username, String date) {
+    public void sendIndividualMessage(String chattrBoxId, String chatId, String chatBody, String sender_username, String receiver_username, String time, long timeStamp) {
         getConnection();
         JSONObject chatObject = new JSONObject();
         try {
@@ -114,13 +115,15 @@ public class ChatManager {
             chatObject.put("chatBody", chatBody);
             chatObject.put("sender_username", sender_username);
             chatObject.put("receiver_username", receiver_username);
-            chatObject.put("date", date);
+            chatObject.put("time", time);
+            chatObject.put("timeStamp", timeStamp);
 
             if (socket == null) {
                 socket = IO.socket(ConstantManager.IP_LOCALHOST);
                 socket.connect();
             }
             socket.emit(ConstantManager.SEND_CHAT_MESSAGE_EVENT, chatObject);
+            Log.i(TAG, String.valueOf(timeStamp));
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (URISyntaxException e) {

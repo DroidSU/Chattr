@@ -15,6 +15,7 @@ public class ConstantManager {
     public static final String SHARED_PREF_FILE_NAME = "ChattrPref";
     public static final String PREF_TITLE_USER_MOBILE = "USER_MOBILE";
     public static final String PREF_TITLE_USER_EMAIL = "USER_EMAIL";
+    public static final String PREF_OPENED_CHAT_ID = "OPENED_CHAT";
     //    public static final String PREF_TITLE_USER_NAME = "USER_NAME";
 //    public static final String PREF_TITLE_USER_SURNAME = "USER_SURNAME";
     public static final String PREF_TITLE_USER_DP_URL = "USER_DP_URL";
