@@ -92,14 +92,18 @@ public class ChatManager {
                         @Override
                         public void execute(Realm realm) {
                             chatIdRealmList = chattrBox.getChatIds();
-                            chatIdRealmList.add(finalChatId);
-                            chattrBox.setChatIds(chatIdRealmList);
+                            RealmList<String> newList = new RealmList<>();
+                            newList.addAll(chatIdRealmList);
+                            newList.add(finalChatId);
+                            chattrBox.setChatIds(newList);
                             realm.copyToRealmOrUpdate(chattrBox);
                         }
                     });
                 } catch (Exception e) {
                     Log.i(TAG, e.getMessage());
                 }
+            } else {
+                Log.i(TAG, "ELSE LOGGED");
             }
         }
 

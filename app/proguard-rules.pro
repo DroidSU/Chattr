@@ -25,6 +25,7 @@
 
 #Proguard rule for firebase model classes
 -keep class com.google.firebase.example.fireeats.java.model.** { *; }
+-keep class com.google.firebase.** { *; }
 
 #RxJava
 #------------Begin pro-guard rule for rxjava-----

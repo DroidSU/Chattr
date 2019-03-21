@@ -254,9 +254,9 @@ public class ChatActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void newMessageReceived(NewChatReceivedEvent newChatReceivedEvent) {
-        setUpRecycler();
+//        setUpRecycler();
         recyclerView.invalidate();
-        recyclerView.smoothScrollToPosition(chatItemArrayList.size() - 1);
+        setUpRecycler();
     }
 
     @OnClick(R.id.imageView_go_back)
