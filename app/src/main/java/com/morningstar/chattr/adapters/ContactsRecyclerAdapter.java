@@ -57,7 +57,19 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
     @Override
     public void onBindViewHolder(@NonNull ContactsRecyclerViewHolder holder, int position) {
         holder.textViewProfileName.setText(contactsArrayList.get(position).getContactName());
-
+//        if (contactsArrayList.get(position).getContactDp() != null) {
+//            holder.circleImageView.setVisibility(View.VISIBLE);
+//            holder.textViewContactInitial.setVisibility(View.GONE);
+//        }
+//        else{
+//            holder.textViewContactInitial.setVisibility(View.VISIBLE);
+//            holder.textViewContactInitial.setText(contactsArrayList.get(position).getContactName().charAt(0));
+//            holder.circleImageView.setVisibility(View.GONE);
+//        }
+        holder.textViewContactInitial.setVisibility(View.VISIBLE);
+        String initial = String.valueOf(contactsArrayList.get(position).getContactName().charAt(0));
+        holder.textViewContactInitial.setText(initial);
+        holder.circleImageView.setVisibility(View.GONE);
         holder.linearLayoutRootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,6 +92,7 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
         CircleImageView circleImageView;
         TextView textViewProfileName;
         TextView textViewOnlineStatus;
+        TextView textViewContactInitial;
         LinearLayout linearLayoutRootLayout;
 
         ContactsRecyclerViewHolder(@NonNull View itemView) {
@@ -88,6 +101,7 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
             textViewProfileName = itemView.findViewById(R.id.textViewProfileName);
             textViewOnlineStatus = itemView.findViewById(R.id.textViewOnlineStatus);
             linearLayoutRootLayout = itemView.findViewById(R.id.contact_item_root_layout);
+            textViewContactInitial = itemView.findViewById(R.id.textViewContactInitial);
         }
     }
 }

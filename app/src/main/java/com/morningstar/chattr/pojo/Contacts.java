@@ -21,6 +21,15 @@ public class Contacts extends RealmObject {
     private boolean isAdded;
     private String contactID;
     private String contactUsername;
+    private String contactDp;
+
+    public String getContactDp() {
+        return contactDp;
+    }
+
+    public void setContactDp(String contactDp) {
+        this.contactDp = contactDp;
+    }
 
     public String getContactUsername() {
         return contactUsername;

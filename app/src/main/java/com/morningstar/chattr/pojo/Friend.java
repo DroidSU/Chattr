@@ -15,10 +15,20 @@ public class Friend extends RealmObject {
 
     public static String FRIEND_MOB_NUMBER = "friendMobNumber";
     public static String FRIEND_USERNAME = "friendUsername";
+    public static String FRIEND_COLOR = "colorResource";
 
     @PrimaryKey
     private String friendMobNumber;
     private String friendUsername;
+    private int colorResource;
+
+    public int getColorResource() {
+        return colorResource;
+    }
+
+    public void setColorResource(int colorResource) {
+        this.colorResource = colorResource;
+    }
 
     public String getFriendUsername() {
         return friendUsername;

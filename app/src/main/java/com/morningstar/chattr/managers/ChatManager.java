@@ -66,6 +66,7 @@ public class ChatManager {
     public ChatItem createChatItemInChattrBox(String chatId, String chattrBoxId, String chatBody, String time, long timeStamp, boolean isGroup, String senderUsername) {
         try (Realm realm = Realm.getDefaultInstance()) {
             ChattrBox chattrBox = realm.where(ChattrBox.class).equalTo(ChattrBox.CHATTRBOX_ID, chattrBoxId).findFirst();
+
             chatIdRealmList = new RealmList<>();
             if (chattrBox != null) {
                 if (chatId.equals("-1"))
@@ -96,6 +97,7 @@ public class ChatManager {
                             newList.addAll(chatIdRealmList);
                             newList.add(finalChatId);
                             chattrBox.setChatIds(newList);
+                            chattrBox.setLastMessageId(finalChatId);
                             realm.copyToRealmOrUpdate(chattrBox);
                         }
                     });
@@ -105,6 +107,8 @@ public class ChatManager {
             } else {
                 Log.i(TAG, "ELSE LOGGED");
             }
+
+
         }
 
         return chatItem;

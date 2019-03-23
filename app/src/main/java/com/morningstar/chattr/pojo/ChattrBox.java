@@ -18,12 +18,22 @@ public class ChattrBox extends RealmObject {
     public static String SENDER_USERNAME = "sender_username";
     public static String RECEIVER_USERNAME = "receiver_username";
     public static String CHATD_IDS = "chatIds";
+    public static String LAST_MESSAGE_ID = "lastMessageId";
 
     @PrimaryKey
     private String chattrBoxId;
     private String sender_username;
     private String receiver_username;
     private RealmList<String> chatIds;
+    private String lastMessageId;
+
+    public String getLastMessageId() {
+        return lastMessageId;
+    }
+
+    public void setLastMessageId(String lastMessageId) {
+        this.lastMessageId = lastMessageId;
+    }
 
     public String getChattrBoxId() {
         return chattrBoxId;

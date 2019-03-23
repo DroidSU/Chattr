@@ -12,10 +12,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/mainActivityRootLayout"
+    android:orientation="vertical"
     tools:context=".activities.MainActivity">
 
     <include
         android:id="@+id/mainActivityToolbar"
         layout="@layout/layout_app_bar" />
 
+    <fragment
+        android:id="@+id/recent_chattrbox_fragment"
+        android:name="com.morningstar.chattr.fragments.RecentChatsFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

@@ -20,6 +20,7 @@ import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.NetworkManager;
 import com.morningstar.chattr.pojo.Contacts;
 import com.morningstar.chattr.services.ContactSyncService;
+import com.morningstar.chattr.utils.DrawerUtils;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -56,6 +57,8 @@ public class AllContactsActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.all_chattrs));
+
+        DrawerUtils.getDrawer(this, toolbar);
 
         initialiseVariables();
         getAvailableContacts();

@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
@@ -28,7 +27,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.socket.client.Socket;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,11 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private String mobileNumber = "";
     private String userName = "";
 
-    private Socket socket;
     private SharedPreferences sharedPreferences;
     private String userInstanceId;
-
-    private DatabaseReference databaseReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
