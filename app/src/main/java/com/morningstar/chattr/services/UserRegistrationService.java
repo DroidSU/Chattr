@@ -79,10 +79,10 @@ public class UserRegistrationService {
                                              EditText editTextUsername, EditText editTextMobileNumber, ActionProcessButton button, Socket socket) {
 
         ArrayList<String> userDetails = new ArrayList<>();
-        userDetails.add(editTextUserEmail.getText().toString());
+        userDetails.add(editTextUserEmail.getText().toString().trim());
         userDetails.add(editTextPassword.getText().toString());
-        userDetails.add(editTextUsername.getText().toString());
-        userDetails.add(editTextMobileNumber.getText().toString());
+        userDetails.add(editTextUsername.getText().toString().trim());
+        userDetails.add(editTextMobileNumber.getText().toString().trim());
 
         Observable<ArrayList<String>> userDetailsObservable = Observable.just(userDetails);
 
@@ -257,7 +257,7 @@ public class UserRegistrationService {
     //send login info to server
     public Subscription sendLoginInfo(EditText editTextUserEmail, EditText editTextPassword, Socket socket, Activity activity, ActionProcessButton button) {
         ArrayList<String> userDetails = new ArrayList<>();
-        userDetails.add(editTextUserEmail.getText().toString());
+        userDetails.add(editTextUserEmail.getText().toString().trim());
         userDetails.add(editTextPassword.getText().toString());
 
         Observable<ArrayList<String>> userDetailsObservable = Observable.just(userDetails);

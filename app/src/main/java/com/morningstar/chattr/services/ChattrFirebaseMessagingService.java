@@ -64,7 +64,7 @@ public class ChattrFirebaseMessagingService extends FirebaseMessagingService {
     private void createNewChatItem(String sender_username, String receiver_username, String chatBody, String chatId, String chattrBoxId) {
         try {
             ChatManager chatManager = new ChatManager();
-            chatItem = chatManager.createChatItemInChattrBox(chatId, chattrBoxId, chatBody, time, timeStamp, false, sender_username);
+            chatItem = chatManager.createChatItemInChattrBox(this, chatId, chattrBoxId, chatBody, time, timeStamp, false, sender_username);
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }

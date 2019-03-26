@@ -8,6 +8,8 @@
 
 package com.morningstar.chattr.managers;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.morningstar.chattr.pojo.ChatItem;
@@ -39,9 +41,14 @@ public class ChatManager {
         socket = NetworkManager.getConnectedSocket();
     }
 
-    public ChattrBox createChattrBox(String sender_username, String receiver_username) {
+    public ChattrBox createChattrBox(Context context, String sender_username, String receiver_username) {
         this.sender_username = sender_username;
         this.receiver_username = receiver_username;
+
+        if (receiver_username == null) {
+            SharedPreferences sharedPreferences = context.getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE);
+            this.receiver_username = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_USERNAME, null);
+        }
 
         try (Realm realm = Realm.getDefaultInstance()) {
             String chattrBoxId = PrimaryKeyManager.getObjectKeyForChattrBox(sender_username, receiver_username);
@@ -63,17 +70,19 @@ public class ChatManager {
         }
     }
 
-    public ChatItem createChatItemInChattrBox(String chatId, String chattrBoxId, String chatBody, String time, long timeStamp, boolean isGroup, String senderUsername) {
+    public ChatItem createChatItemInChattrBox(Context context, String chatId, String chattrBoxId, String chatBody, String time, long timeStamp, boolean isGroup, String senderUsername) {
+        chatIdRealmList = new RealmList<>();
         try (Realm realm = Realm.getDefaultInstance()) {
             ChattrBox chattrBox = realm.where(ChattrBox.class).equalTo(ChattrBox.CHATTRBOX_ID, chattrBoxId).findFirst();
 
-            chatIdRealmList = new RealmList<>();
-            if (chattrBox != null) {
-                if (chatId.equals("-1"))
-                    chatId = PrimaryKeyManager.getPrimaryKeyForChatItem(chattrBox.getSender_username());
+            if (chattrBox == null) {
+                chattrBox = createChattrBox(context, sender_username, null);
             }
+            if (chatId.equals("-1"))
+                chatId = PrimaryKeyManager.getPrimaryKeyForChatItem(chattrBox.getSender_username());
 
             String finalChatId = chatId;
+
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -89,16 +98,17 @@ public class ChatManager {
 
             if (chattrBox != null) {
                 try {
+                    ChattrBox finalChattrBox = chattrBox;
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
-                            chatIdRealmList = chattrBox.getChatIds();
+                            chatIdRealmList = finalChattrBox.getChatIds();
                             RealmList<String> newList = new RealmList<>();
                             newList.addAll(chatIdRealmList);
                             newList.add(finalChatId);
-                            chattrBox.setChatIds(newList);
-                            chattrBox.setLastMessageId(finalChatId);
-                            realm.copyToRealmOrUpdate(chattrBox);
+                            finalChattrBox.setChatIds(newList);
+                            finalChattrBox.setLastMessageId(finalChatId);
+                            realm.copyToRealmOrUpdate(finalChattrBox);
                         }
                     });
                 } catch (Exception e) {

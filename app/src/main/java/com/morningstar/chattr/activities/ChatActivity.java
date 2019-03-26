@@ -177,9 +177,9 @@ public class ChatActivity extends AppCompatActivity {
             chatTimeStamp = DateTimeManager.getCurrentSystemDate();
             if (NetworkManager.hasInternetAccess()) {
                 ChatManager chatManager = new ChatManager();
-                chattrBox = chatManager.createChattrBox(my_user_Name, friend_username);
+                chattrBox = chatManager.createChattrBox(this, my_user_Name, friend_username);
                 //send -1 to get a new chat item
-                chatItem = chatManager.createChatItemInChattrBox("-1", chattrBox.getChattrBoxId(), chatBody, currentTime, chatTimeStamp, false, my_user_Name);
+                chatItem = chatManager.createChatItemInChattrBox(this, "-1", chattrBox.getChattrBoxId(), chatBody, currentTime, chatTimeStamp, false, my_user_Name);
                 chatManager.sendIndividualMessage(chattrBox.getChattrBoxId(), chatItem.getId(), chatBody, my_user_Name, friend_username, currentTime, chatTimeStamp);
                 recyclerView.invalidate();
                 setUpRecycler();
