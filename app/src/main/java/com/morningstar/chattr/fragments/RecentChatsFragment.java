@@ -13,6 +13,7 @@ import com.morningstar.chattr.adapters.RecentChatsRecyclerAdapter;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.pojo.ChatItem;
 import com.morningstar.chattr.pojo.ChattrBox;
+import com.morningstar.chattr.pojo.Contacts;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -89,12 +90,22 @@ public class RecentChatsFragment extends Fragment {
 
         for (ChattrBox chattrBox : chattrBoxRealmResults) {
             String chatId = chattrBox.getLastMessageId();
+            String username;
             ChatItem chatItem = realm.where(ChatItem.class).equalTo(ChatItem.ID, chatId).findFirst();
             chatItemArrayList.add(chatItem);
             if (chattrBox.getSender_username().equalsIgnoreCase(myNum))
-                senderNames.add(chattrBox.getReceiver_username());
+                username = chattrBox.getReceiver_username();
             else
-                senderNames.add(chattrBox.getSender_username());
+                username = chattrBox.getSender_username();
+
+            Contacts contact = realm.where(Contacts.class).equalTo(Contacts.CONTACT_USERNAME, username).findFirst();
+            if (contact != null) {
+                if (contact.getContactName() != null)
+                    senderNames.add(contact.getContactName());
+                else
+                    senderNames.add(username);
+            } else
+                senderNames.add(username);
         }
     }
 
