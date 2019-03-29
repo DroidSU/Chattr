@@ -38,9 +38,10 @@ public class RecentChatsFragment extends Fragment {
     private Context context;
     private RealmResults<ChattrBox> chattrBoxRealmResults;
     private ArrayList<ChatItem> chatItemArrayList;
+    private ArrayList<String> senderUsernames;
     private ArrayList<String> senderNames;
     private Realm realm;
-    private String myNum;
+    private String myUsername;
     private SharedPreferences sharedPreferences;
     private RecentChatsRecyclerAdapter recyclerAdapter;
 
@@ -62,23 +63,28 @@ public class RecentChatsFragment extends Fragment {
         realm = Realm.getDefaultInstance();
 
         sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences(ConstantManager.SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE);
-        myNum = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_MOBILE, null);
-        senderNames = new ArrayList<>();
-        chatItemArrayList = new ArrayList<>();
+        myUsername = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_USERNAME, null);
+        initialiseVariables();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         getAllRecentChats();
 
-        if (senderNames.size() > 0) {
+        if (senderUsernames.size() > 0) {
             recyclerView.setVisibility(View.VISIBLE);
             textViewNoItem.setVisibility(View.GONE);
-            recyclerAdapter = new RecentChatsRecyclerAdapter(getContext(), senderNames, chatItemArrayList);
+            recyclerAdapter = new RecentChatsRecyclerAdapter(getContext(), senderUsernames, senderNames, chatItemArrayList);
             recyclerView.setAdapter(recyclerAdapter);
         } else {
             recyclerView.setVisibility(View.GONE);
             textViewNoItem.setVisibility(View.VISIBLE);
         }
         return view;
+    }
+
+    private void initialiseVariables() {
+        senderUsernames = new ArrayList<>();
+        senderNames = new ArrayList<>();
+        chatItemArrayList = new ArrayList<>();
     }
 
     private void getAllRecentChats() {
@@ -93,19 +99,24 @@ public class RecentChatsFragment extends Fragment {
             String username;
             ChatItem chatItem = realm.where(ChatItem.class).equalTo(ChatItem.ID, chatId).findFirst();
             chatItemArrayList.add(chatItem);
-            if (chattrBox.getSender_username().equalsIgnoreCase(myNum))
+            if (chattrBox.getSender_username().equalsIgnoreCase(myUsername))
                 username = chattrBox.getReceiver_username();
             else
                 username = chattrBox.getSender_username();
 
             Contacts contact = realm.where(Contacts.class).equalTo(Contacts.CONTACT_USERNAME, username).findFirst();
             if (contact != null) {
-                if (contact.getContactName() != null)
+                if (contact.getContactName() != null) {
                     senderNames.add(contact.getContactName());
-                else
-                    senderNames.add(username);
-            } else
-                senderNames.add(username);
+                    senderUsernames.add(username);
+                } else {
+                    senderNames.add("");
+                    senderUsernames.add(username);
+                }
+            } else {
+                senderUsernames.add(username);
+                senderNames.add("");
+            }
         }
     }
 

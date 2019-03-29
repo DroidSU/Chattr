@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.adapters.ChatActivityRecyclerAdapter;
 import com.morningstar.chattr.adapters.ContactsRecyclerAdapter;
+import com.morningstar.chattr.adapters.RecentChatsRecyclerAdapter;
 import com.morningstar.chattr.events.FriendDetailsFetchedEvent;
 import com.morningstar.chattr.events.NewChatReceivedEvent;
 import com.morningstar.chattr.managers.ChatManager;
@@ -123,10 +124,9 @@ public class ChatActivity extends AppCompatActivity {
         editor.apply();
 
         chattrBox = mRealm.where(ChattrBox.class).equalTo(ChattrBox.CHATTRBOX_ID, chattrboxid).findFirst();
-
         socket = NetworkManager.getConnectedSocket();
-        getFriendObjectFromRealm();
 
+        getFriendObjectFromRealm();
         if (friend == null) {
             //creating friend object
             if (friend_user_number != null)
@@ -234,7 +234,7 @@ public class ChatActivity extends AppCompatActivity {
             if (initiator.equalsIgnoreCase(ContactsRecyclerAdapter.TAG)) {
                 friend_user_number = bundle.getString(ConstantManager.CONTACT_NUMBER);
                 friend_username = bundle.getString(ConstantManager.CONTACT_USERNAME);
-            } else if (initiator.equalsIgnoreCase(ChattrFirebaseMessagingService.TAG))
+            } else if (initiator.equalsIgnoreCase(ChattrFirebaseMessagingService.TAG) || initiator.equalsIgnoreCase(RecentChatsRecyclerAdapter.TAG))
                 friend_username = bundle.getString(ConstantManager.FRIEND_USERNAME);
 
             textViewUserName.setText(friend_username);
@@ -266,8 +266,11 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        startActivity(new Intent(ChatActivity.this, AllContactsActivity.class));
+        if (initiator.equalsIgnoreCase(ChattrFirebaseMessagingService.TAG) || initiator.equalsIgnoreCase(RecentChatsRecyclerAdapter.TAG)) {
+            startActivity(new Intent(ChatActivity.this, MainActivity.class));
+        } else {
+            startActivity(new Intent(ChatActivity.this, AllContactsActivity.class));
+        }
         finish();
     }
 

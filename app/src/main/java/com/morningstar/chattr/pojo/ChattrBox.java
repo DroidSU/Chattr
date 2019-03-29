@@ -19,6 +19,7 @@ public class ChattrBox extends RealmObject {
     public static String RECEIVER_USERNAME = "receiver_username";
     public static String CHATD_IDS = "chatIds";
     public static String LAST_MESSAGE_ID = "lastMessageId";
+    public static String UNREAD_COUNT = "unreadCount";
 
     @PrimaryKey
     private String chattrBoxId;
@@ -26,6 +27,15 @@ public class ChattrBox extends RealmObject {
     private String receiver_username;
     private RealmList<String> chatIds;
     private String lastMessageId;
+    private int unreadCount;
+
+    public int getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
+    }
 
     public String getLastMessageId() {
         return lastMessageId;
