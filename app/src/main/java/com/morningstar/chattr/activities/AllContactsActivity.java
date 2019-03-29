@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.morningstar.chattr.R;
@@ -81,11 +82,11 @@ public class AllContactsActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (realm != null && !realm.isClosed()) {
             realm.close();
         }
         NetworkManager.disconnectFromSocket();
+        super.onDestroy();
     }
 
     @Override
@@ -99,6 +100,7 @@ public class AllContactsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.all_contact_refresh:
+                Toast.makeText(this, "Syncing", Toast.LENGTH_SHORT).show();
                 refreshAllContacts();
                 break;
         }
@@ -108,5 +110,11 @@ public class AllContactsActivity extends AppCompatActivity {
 
     private void refreshAllContacts() {
         startService(new Intent(AllContactsActivity.this, ContactSyncService.class));
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(AllContactsActivity.this, MainActivity.class));
+        finish();
     }
 }

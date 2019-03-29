@@ -66,10 +66,12 @@ public class DrawerUtils {
                         if (position == 2) {
                             Intent intent = new Intent(activity, MainActivity.class);
                             activity.startActivity(intent);
+                            activity.finish();
                         }
                         if (position == 4) {
                             Intent intent = new Intent(activity, AllContactsActivity.class);
                             activity.startActivity(intent);
+                            activity.finish();
                         }
 
                         return true;
