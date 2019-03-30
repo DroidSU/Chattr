@@ -30,7 +30,7 @@ public class DateTimeManager {
     public static String getCurrentTimeAsString() {
         Calendar calendar = Calendar.getInstance();
         Date currentLocalTime = calendar.getTime();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm a");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
         return simpleDateFormat.format(currentLocalTime);
     }
 }

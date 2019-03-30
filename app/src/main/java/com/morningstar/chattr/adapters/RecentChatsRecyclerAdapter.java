@@ -48,8 +48,14 @@ public class RecentChatsRecyclerAdapter extends RecyclerView.Adapter<RecentChats
     @Override
     public void onBindViewHolder(@NonNull RecentChatsViewHolder holder, int position) {
         holder.contactDp.setVisibility(View.GONE);
-        holder.textViewContactInitial.setText(String.valueOf(usernames.get(position).charAt(0)).toUpperCase());
-        holder.textViewContactName.setText(usernames.get(position));
+        String name = names.get(position);
+        if (name.equalsIgnoreCase("")) {
+            holder.textViewContactInitial.setText(String.valueOf(usernames.get(position).charAt(0)).toUpperCase());
+            holder.textViewContactName.setText(usernames.get(position));
+        } else {
+            holder.textViewContactInitial.setText(String.valueOf(names.get(position).charAt(0)).toUpperCase());
+            holder.textViewContactName.setText(names.get(position));
+        }
 
         ChatItem chatItem = chatItemArrayList.get(position);
         if (chatItem.getSenderUsername().equals(usernames.get(position)))

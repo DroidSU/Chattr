@@ -31,6 +31,7 @@ import com.morningstar.chattr.managers.NetworkManager;
 import com.morningstar.chattr.managers.PrimaryKeyManager;
 import com.morningstar.chattr.pojo.ChatItem;
 import com.morningstar.chattr.pojo.ChattrBox;
+import com.morningstar.chattr.pojo.Contacts;
 import com.morningstar.chattr.pojo.Friend;
 import com.morningstar.chattr.services.ChattrFirebaseMessagingService;
 
@@ -81,6 +82,8 @@ public class ChatActivity extends AppCompatActivity {
     private String my_user_Name;
     private String friend_user_number;
     private String my_number;
+    private String friend_name;
+    private String my_name;
     private String currentDate;
     private String currentTime;
     private long chatTimeStamp;
@@ -128,7 +131,7 @@ public class ChatActivity extends AppCompatActivity {
 
         getFriendObjectFromRealm();
         if (friend == null) {
-            //creating friend object
+            //creating friend object if not present already
             if (friend_user_number != null)
                 NetworkManager.sendNumberForFriendDetails(friend_user_number);
             else
@@ -139,9 +142,10 @@ public class ChatActivity extends AppCompatActivity {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
-//        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
+
         setUpRecycler();
+        setUpTextView();
     }
 
     private void setUpRecycler() {
@@ -206,13 +210,6 @@ public class ChatActivity extends AppCompatActivity {
                     friend_user_number = jsonObject.getString("friendMobNumber");
                     friend_username = jsonObject.getString("friendUsername");
 
-                    textViewUserName.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            textViewUserName.setText(friend_username);
-                        }
-                    });
-
                     EventBus.getDefault().post(new FriendDetailsFetchedEvent());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -230,15 +227,38 @@ public class ChatActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra(ConstantManager.BUNDLE_EXTRAS);
         initiator = bundle.getString(ConstantManager.INITIATOR_ACTIVITY);
+        /*  From contacts recycler adapter: send friend name and username
+            From fcm service: send friend username only and get name of friend from contact or object created before
+            From recent chats: send friend username and name.
+         */
         if (initiator != null) {
             if (initiator.equalsIgnoreCase(ContactsRecyclerAdapter.TAG)) {
                 friend_user_number = bundle.getString(ConstantManager.CONTACT_NUMBER);
                 friend_username = bundle.getString(ConstantManager.CONTACT_USERNAME);
-            } else if (initiator.equalsIgnoreCase(ChattrFirebaseMessagingService.TAG) || initiator.equalsIgnoreCase(RecentChatsRecyclerAdapter.TAG))
+                friend_name = bundle.getString(ConstantManager.CONTACT_NAME);
+            } else if (initiator.equalsIgnoreCase(ChattrFirebaseMessagingService.TAG)) {
                 friend_username = bundle.getString(ConstantManager.FRIEND_USERNAME);
+                friend_name = null;
 
-            textViewUserName.setText(friend_username);
+            } else if (initiator.equalsIgnoreCase(RecentChatsRecyclerAdapter.TAG)) {
+                friend_username = bundle.getString(ConstantManager.FRIEND_USERNAME);
+                friend_name = bundle.getString(ConstantManager.FRIEND_NAME);
+            }
         }
+    }
+
+    private void setUpTextView() {
+        String username = friend_username;
+        Contacts contact = mRealm.where(Contacts.class).equalTo(Contacts.CONTACT_USERNAME, username).findFirst();
+        if (contact != null)
+            textViewUserName.setText(contact.getContactName());
+        else if (friend != null) {
+            if (friend.getFriendName() != null)
+                textViewUserName.setText(friend.getFriendName());
+            else
+                textViewUserName.setText(friend.getFriendUsername());
+        } else
+            textViewUserName.setText(username);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

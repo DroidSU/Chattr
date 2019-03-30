@@ -7,10 +7,11 @@
   ~ P.S.: In case you are planning to use this without mentioning me, you will be met with mean judgemental looks and sarcastic comments.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainActivityRootLayout"
     android:orientation="vertical"
     tools:context=".activities.MainActivity">
@@ -23,5 +24,18 @@
         android:id="@+id/recent_chattrbox_fragment"
         android:name="com.morningstar.chattr.fragments.RecentChatsFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:layout_marginTop="?android:actionBarSize" />
+
+    <com.rey.material.widget.FloatingActionButton
+        android:id="@+id/allContactsButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        app:fabSize="auto"
+        app:fab_backgroundColor="@color/colorPrimaryDark"
+        app:fab_iconSrc="@drawable/ic_contacts_white_24dp" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

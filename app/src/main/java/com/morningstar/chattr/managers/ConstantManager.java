@@ -68,5 +68,6 @@ public class ConstantManager {
     public static final String PREF_TITLE_USER_TOKEN = "InstanceId";
     public static final String NEW_MESSAGE_RECEIVED = "NEW_MESSAGE_RECEIVED";
     public static final String FRIEND_USERNAME = "friend_username";
+    public static final String FRIEND_NAME = "friend_name";
     public static final String INITIATOR_ACTIVITY = "initiator_activity";
 }

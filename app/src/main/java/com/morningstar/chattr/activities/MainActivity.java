@@ -13,20 +13,22 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.morningstar.chattr.R;
 import com.morningstar.chattr.managers.ConstantManager;
 import com.morningstar.chattr.managers.NetworkManager;
 import com.morningstar.chattr.utils.DrawerUtils;
+import com.rey.material.widget.FloatingActionButton;
 
 import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,7 +37,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.mainActivityToolbar)
     Toolbar toolbar;
     @BindView(R.id.mainActivityRootLayout)
-    LinearLayout rootLayout;
+    CoordinatorLayout rootLayout;
+    @BindView(R.id.allContactsButton)
+    FloatingActionButton actionButton;
 
     private String mobileNumber = "";
     private String userName = "";
@@ -80,6 +84,12 @@ public class MainActivity extends AppCompatActivity {
         userInstanceId = sharedPreferences.getString(ConstantManager.PREF_TITLE_USER_TOKEN, null);
     }
 
+    @OnClick(R.id.allContactsButton)
+    public void onClickActionButton() {
+        startActivity(new Intent(MainActivity.this, AllContactsActivity.class));
+        finish();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -101,40 +111,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
-
-//    private void logOutUser() {
-//        databaseReference = FirebaseDatabase.getInstance().getReference().child(ConstantManager.FIREBASE_PHONE_NUMBERS_TABLE)
-//                .child(mobileNumber);
-//        databaseReference.child(ConstantManager.FIREBASE_IS_ONLINE_COLUMN)
-//                .setValue(false).addOnSuccessListener(new OnSuccessListener<Void>() {
-//            @Override
-//            public void onSuccess(Void aVoid) {
-//                databaseReference.child(ConstantManager.FIREBASE_IS_LOGGED_IN_COLUMN).setValue(false)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//                                firebaseAuth.signOut();
-//                                Intent intent = new Intent(MainActivity.this, LoginUsingEmailActivity.class);
-//                                startActivity(intent);
-//                                finish();
-//                            }
-//                        });
-//            }
-//        })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Snackbar snackbar = Snackbar.make(rootLayout, "Could not sign out at the moment", Snackbar.LENGTH_SHORT);
-//                        snackbar.setAction("TRY AGAIN", new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                logOutUser();
-//                            }
-//                        });
-//                        snackbar.show();
-//                    }
-//                });
-//    }
 
     @Override
     public void onBackPressed() {
